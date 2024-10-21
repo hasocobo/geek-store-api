@@ -1,5 +1,4 @@
-﻿using Serilog;
-namespace StoreApi.Extensions
+﻿namespace StoreApi.Extensions
 {
     public static class ServiceExtensions
     {
