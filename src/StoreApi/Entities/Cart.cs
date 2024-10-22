@@ -14,6 +14,5 @@ namespace StoreApi.Entities
 
         public Guid ProductId { get; set; }
         public Product? Product { get; set; }
-
     }
 }

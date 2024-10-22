@@ -5,10 +5,10 @@ namespace StoreApi.Entities
     public class Category
     {
         public Guid Id { get; set; }
+
         [Required(ErrorMessage = "Category name field is required.")]
         public string? Name { get; set; }
 
-        public ICollection<Product> Products { get; set; }
-            = new List<Product>();
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using StoreApi.Extensions;
+using StoreApi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,7 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+builder.Services.AddDbContext<StoreContext>(options => options.UseInMemoryDatabase("StoreDb"));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();

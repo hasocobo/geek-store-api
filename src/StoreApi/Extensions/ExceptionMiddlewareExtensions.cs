@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using System.Net;
+using Microsoft.AspNetCore.Diagnostics;
 using StoreApi.Entities;
-using System.Net;
+
 namespace StoreApi.Extensions
 {
     public static class ExceptionMiddlewareExtensions
     {
-        public static void ConfigureExceptionHandler(this WebApplication app,
-            ILogger logger)
+        public static void ConfigureExceptionHandler(this WebApplication app, ILogger logger)
         {
             app.UseExceptionHandler(appError =>
             {
@@ -21,11 +21,13 @@ namespace StoreApi.Extensions
                     {
                         logger.LogError("Something went wrong {message}", contextFeature.Error);
 
-                        await context.Response.WriteAsync(new ErrorDetails()
-                        {
-                            StatusCode = context.Response.StatusCode,
-                            Message = "Internal Server Error"
-                        }.ToString());
+                        await context.Response.WriteAsync(
+                            new ErrorDetails()
+                            {
+                                StatusCode = context.Response.StatusCode,
+                                Message = "Internal Server Error",
+                            }.ToString()
+                        );
                     }
                 });
             });

@@ -8,8 +8,6 @@
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
 
-
-        public ICollection<OrderItem> OrderItems { get; set; }
-            = new List<OrderItem>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }
