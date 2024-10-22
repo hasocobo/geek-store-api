@@ -62,14 +62,14 @@ namespace StoreApi.Infrastructure
                     .HasOne(e => e.Customer)
                     .WithMany(e => e.Carts)
                     .HasForeignKey(e => e.CustomerId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 // One Cart to One Product
                 entity
                     .HasOne(e => e.Product)
                     .WithMany(e => e.Carts)
                     .HasForeignKey(e => e.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Wishlist>(entity =>
@@ -117,15 +117,13 @@ namespace StoreApi.Infrastructure
                 entity
                     .HasOne(e => e.Product)
                     .WithMany(e => e.OrderItems)
-                    .HasForeignKey(e => e.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(e => e.ProductId);
 
                 // One OrderItem to One Order (already defined in Order entity)
                 entity
                     .HasOne(e => e.Order)
                     .WithMany(e => e.OrderItems)
-                    .HasForeignKey(e => e.OrderId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(e => e.OrderId);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -153,12 +151,11 @@ namespace StoreApi.Infrastructure
                     .HasForeignKey(e => e.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                // One Product to One Category
+                // One Product to Many Categories
                 entity
                     .HasOne(e => e.Category)
                     .WithMany(e => e.Products)
-                    .HasForeignKey(e => e.CategoryId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(e => e.CategoryId);
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -170,11 +167,14 @@ namespace StoreApi.Infrastructure
                     .HasMany(e => e.Products)
                     .WithOne(e => e.Category)
                     .HasForeignKey(e => e.CategoryId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+            modelBuilder.ApplyConfiguration(new WishlistConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderConfiguration());
         }
     }
 }
