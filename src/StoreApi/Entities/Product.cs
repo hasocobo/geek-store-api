@@ -19,5 +19,13 @@ namespace StoreApi.Entities
 
         public Category? Category { get; set; }
 
+        public ICollection<OrderItem> OrderItems { get; set; }
+            = new List<OrderItem>();
+
+        public ICollection<Wishlist> Wishlists { get; set; }
+            = new List<Wishlist>();
+
+        public ICollection<Cart> Carts { get; set;}
+            = new List<Cart>();
     }
 }
