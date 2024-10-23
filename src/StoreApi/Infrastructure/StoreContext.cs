@@ -7,6 +7,7 @@ namespace StoreApi.Infrastructure
 {
     public class StoreContext : DbContext
     {
+        
         public StoreContext(DbContextOptions options)
             : base(options) { }
 
@@ -175,6 +176,8 @@ namespace StoreApi.Infrastructure
             modelBuilder.ApplyConfiguration(new CustomerConfiguration());
             modelBuilder.ApplyConfiguration(new WishlistConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+            modelBuilder.ApplyConfiguration(new CartConfiguration());
         }
     }
 }

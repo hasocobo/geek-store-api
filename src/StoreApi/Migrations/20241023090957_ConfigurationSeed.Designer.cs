@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StoreApi.Infrastructure;
 
@@ -10,9 +11,11 @@ using StoreApi.Infrastructure;
 namespace StoreApi.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20241023090957_ConfigurationSeed")]
+    partial class ConfigurationSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -127,6 +130,9 @@ namespace StoreApi.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
@@ -138,13 +144,15 @@ namespace StoreApi.Migrations
                         {
                             Id = new Guid("0aa7b22d-c50f-477e-93df-822e2ad2c264"),
                             CustomerId = new Guid("860c06fb-fd88-4661-bbba-9afefe9ccc3f"),
-                            Date = new DateTime(2024, 10, 21, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Date = new DateTime(2024, 10, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TotalPrice = 55.00m
                         },
                         new
                         {
                             Id = new Guid("10af2d9b-2007-4798-be1c-115c852c2ffe"),
                             CustomerId = new Guid("860c06fb-fd88-4661-bbba-9afefe9ccc3f"),
-                            Date = new DateTime(2024, 10, 21, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Date = new DateTime(2024, 10, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TotalPrice = 125.00m
                         });
                 });
 
@@ -156,8 +164,8 @@ namespace StoreApi.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Price")
+                        .HasColumnType("INTEGER");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("TEXT");
@@ -178,33 +186,33 @@ namespace StoreApi.Migrations
                         {
                             Id = new Guid("1aa7b22d-c50f-477e-93df-822e2ad2c264"),
                             OrderId = new Guid("0aa7b22d-c50f-477e-93df-822e2ad2c264"),
-                            Price = 29.99m,
+                            Price = 0,
                             ProductId = new Guid("17892431-77a6-4a94-9fac-70a05552aa8f"),
-                            Quantity = 3
+                            Quantity = 0
                         },
                         new
                         {
                             Id = new Guid("2aaf2d9b-2007-4798-be1c-115c852c2ffe"),
                             OrderId = new Guid("0aa7b22d-c50f-477e-93df-822e2ad2c264"),
-                            Price = 19.99m,
+                            Price = 0,
                             ProductId = new Guid("886b55ae-3dd1-44fb-992c-20ef034134bf"),
-                            Quantity = 2
+                            Quantity = 0
                         },
                         new
                         {
                             Id = new Guid("3aaf2d9b-2007-4798-be1c-115c852c2ffe"),
                             OrderId = new Guid("10af2d9b-2007-4798-be1c-115c852c2ffe"),
-                            Price = 29.99m,
+                            Price = 0,
                             ProductId = new Guid("17892431-77a6-4a94-9fac-70a05552aa8f"),
-                            Quantity = 1
+                            Quantity = 0
                         },
                         new
                         {
                             Id = new Guid("4aaf2d9b-2007-4798-be1c-115c852c2ffe"),
                             OrderId = new Guid("10af2d9b-2007-4798-be1c-115c852c2ffe"),
-                            Price = 9.99m,
+                            Price = 0,
                             ProductId = new Guid("ae450822-2ddf-4ca3-8476-8849b6041939"),
-                            Quantity = 4
+                            Quantity = 0
                         });
                 });
 
@@ -224,7 +232,7 @@ namespace StoreApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal?>("Price")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SKU")
