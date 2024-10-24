@@ -154,7 +154,7 @@ namespace StoreApi.Infrastructure
 
                 // One Product to Many Categories
                 entity
-                    .HasOne(e => e.Category)
+                    .HasOne(e => e.Category)    
                     .WithMany(e => e.Products)
                     .HasForeignKey(e => e.CategoryId);
             });
