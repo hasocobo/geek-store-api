@@ -9,7 +9,7 @@ namespace StoreApi.Entities
 
         [Required(ErrorMessage = "Product name is a required field.")]
         public string? Name { get; set; }
-        public string? SKU { get; set; }
+        public string? Sku { get; set; }
 
         public string? Description { get; set; }
 
