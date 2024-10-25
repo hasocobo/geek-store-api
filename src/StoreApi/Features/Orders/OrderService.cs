@@ -1,4 +1,6 @@
-﻿namespace StoreApi.Features.Orders
+﻿using StoreApi.Entities;
+
+namespace StoreApi.Features.Orders
 {
     public class OrderService : IOrderService
     {
@@ -10,6 +12,15 @@
             _repositoryManager = repositoryManager;
             _logger = logger;
         }
-        
+
+        public async Task<IEnumerable<Order>> GetOrdersAsync()
+        {
+            return await _repositoryManager.OrderRepository.GetOrdersAsync();
+        }
+
+        public Task<Order> GetOrderByIdAsync(Guid id)
+        {
+            return _repositoryManager.OrderRepository.GetOrderByIdAsync(id);
+        }
     }
 }

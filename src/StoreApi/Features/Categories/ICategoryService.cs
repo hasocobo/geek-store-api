@@ -1,6 +1,10 @@
-﻿namespace StoreApi.Features.Categories
+﻿using StoreApi.Entities;
+
+namespace StoreApi.Features.Categories
 {
     public interface ICategoryService
     {
+        Task<IEnumerable<Category>> GetCategoriesAsync();
+        Task<Category> GetCategoryByIdAsync(Guid id);
     }
 }

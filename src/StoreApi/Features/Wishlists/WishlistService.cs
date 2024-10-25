@@ -1,4 +1,6 @@
-﻿namespace StoreApi.Features.Wishlists
+﻿using StoreApi.Entities;
+
+namespace StoreApi.Features.Wishlists
 {
     public class WishlistService : IWishlistService
     {
@@ -9,6 +11,15 @@
         {
             _repositoryManager = repositoryManager;
             _logger = logger;
+        }
+
+        public async Task<IEnumerable<Wishlist>> GetWishlistsAsync()
+        {
+            return await _repositoryManager.WishlistRepository.GetWishlistsAsync();
+        }
+        public async Task<Wishlist> GetWishlistByIdAsync(Guid id)
+        {
+            return await _repositoryManager.WishlistRepository.GetWishlistByIdAsync(id);
         }
     }
 }

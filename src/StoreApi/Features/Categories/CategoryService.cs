@@ -1,4 +1,6 @@
-﻿namespace StoreApi.Features.Categories
+﻿using StoreApi.Entities;
+
+namespace StoreApi.Features.Categories
 {
     public class CategoryService : ICategoryService
     {
@@ -10,5 +12,16 @@
             _repositoryManager = repositoryManager;
             _logger = logger;
         }
+
+        public async Task<IEnumerable<Category>> GetCategoriesAsync()
+        {
+            return await _repositoryManager.CategoryRepository.GetAllCategoriesAsync();
+        }
+
+        public async Task<Category> GetCategoryByIdAsync(Guid id)
+        {
+            return await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+        }
+        
     }
 }

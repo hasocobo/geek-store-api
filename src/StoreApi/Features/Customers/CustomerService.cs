@@ -1,4 +1,6 @@
-﻿namespace StoreApi.Features.Customers
+﻿using StoreApi.Entities;
+
+namespace StoreApi.Features.Customers
 {
     public class CustomerService : ICustomerService
     {
@@ -9,6 +11,17 @@
         {
             _repositoryManager = repositoryManager;
             _logger = logger;
+        }
+
+        public async Task<IEnumerable<Customer>> GetCustomersAsync()
+        {
+            return await _repositoryManager.CustomerRepository.GetCustomersAsync();
+        }
+
+        public async Task<Customer> GetCustomerByIdAsync(Guid id)
+        {
+            return await _repositoryManager.CustomerRepository.GetCustomerByIdAsync(id) ??
+                   throw new InvalidOperationException();
         }
     }
 }

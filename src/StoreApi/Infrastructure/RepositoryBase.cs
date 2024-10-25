@@ -7,7 +7,7 @@ namespace StoreApi.Infrastructure
     {
         protected readonly StoreContext _storeContext;
 
-        public RepositoryBase(StoreContext storeContext)
+        protected RepositoryBase(StoreContext storeContext)
         {
             _storeContext = storeContext;
         }

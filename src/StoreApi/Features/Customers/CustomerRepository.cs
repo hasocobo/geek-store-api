@@ -1,4 +1,5 @@
-﻿using StoreApi.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using StoreApi.Entities;
 using StoreApi.Infrastructure;
 
 namespace StoreApi.Features.Customers
@@ -7,6 +8,22 @@ namespace StoreApi.Features.Customers
     {
         public CustomerRepository(StoreContext storeContext) : base(storeContext)
         {
+        }
+
+        public async Task<IEnumerable<Customer>> GetCustomersAsync()
+        {
+            return await FindAll()
+                .Include(customer => customer.Orders)
+                .Include(customer => customer.Carts)
+                .Include(customer => customer.Wishlists)
+                .ToListAsync();
+        }
+
+        public async Task<Customer?> GetCustomerByIdAsync(Guid customerId)
+        {
+            return await FindByCondition(customer =>
+                    customer.Id.Equals(customerId))
+                .SingleOrDefaultAsync();
         }
     }
 }
