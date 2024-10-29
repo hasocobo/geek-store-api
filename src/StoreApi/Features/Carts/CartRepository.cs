@@ -34,5 +34,10 @@ namespace StoreApi.Features.Carts
             cart.CustomerId = customerId;
             Create(cart);
         }
+
+        public void DeleteCart(Cart cart)
+        {
+            Delete(cart);
+        }
     }
 }

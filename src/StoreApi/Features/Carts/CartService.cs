@@ -94,5 +94,14 @@ namespace StoreApi.Features.Carts
             );
             return cartToReturn;
         }
+
+        public async Task DeleteCartAsync(Guid id)
+        {
+            _logger.LogInformation($"Fetching cart to delete with Id: {id}");
+            var cart = await _repositoryManager.CartRepository.GetCartByIdAsync(id);
+            _logger.LogInformation($"Deleting cart with Id: {id}");
+            _repositoryManager.CartRepository.DeleteCart(cart);
+            await _repositoryManager.SaveAsync();
+        }
     }
 }

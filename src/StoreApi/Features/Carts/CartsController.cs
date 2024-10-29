@@ -53,18 +53,19 @@ namespace StoreApi.Features.Carts
             return CreatedAtAction(nameof(GetCartById), new { id = cartToReturn.Id }, cartToReturn);
         }
 
-        // PUT: api/customers/{customerId}/cars/{id}
+        // PUT: api/customers/{customerId}/carts/{id}
         [HttpPut("customers/{customerId:guid}/carts/{id:guid}")]
         public async Task UpdateCartItemForCustomer(Guid customerId, Guid id)
         {
             throw new NotImplementedException();
         }
 
-        // DELETE: api/customers/{customerId}/carts/{id}
-        [HttpDelete("customers/{customerId:guid}/carts/{id:guid}")]
-        public async Task DeleteCartItemForCustomer(Guid customerId, Guid id)
+        // DELETE: api/carts/{cartId}
+        [HttpDelete("carts/{id:guid}")]
+        public async Task<ActionResult> DeleteCartItem(Guid id)
         {
-            throw new NotImplementedException();
+            await _serviceManager.CartService.DeleteCartAsync(id);
+            return NoContent();
         }
     }
 }
