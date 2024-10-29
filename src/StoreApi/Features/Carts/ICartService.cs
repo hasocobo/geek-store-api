@@ -5,8 +5,9 @@ namespace StoreApi.Features.Carts
 {
     public interface ICartService
     {
-        Task<IEnumerable<Cart>> GetCartsAsync();
-        Task<Cart> GetCartByIdAsync(Guid cartId);
+        Task<IEnumerable<CartReadDto>> GetCartsAsync();
+        Task<CartReadDto> GetCartByIdAsync(Guid cartId);
+        Task<IEnumerable<CartReadDto>> GetCartsByCustomerIdAsync(Guid customerId);
         
         Task<CartReadDto> CreateCartForCustomerAsync(Guid customerId, CartCreateDto cartCreateDto);
         

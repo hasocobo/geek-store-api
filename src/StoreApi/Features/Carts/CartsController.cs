@@ -21,51 +21,49 @@ namespace StoreApi.Features.Carts
 
         // GET: api/carts
         [HttpGet("carts")]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCarts()
+        public async Task<ActionResult<IEnumerable<CartReadDto>>> GetCarts()
         {
-            _logger.LogInformation("Getting carts");
-            var categories = await _serviceManager.CartService.GetCartsAsync();
-            return Ok(categories);
+            var carts = await _serviceManager.CartService.GetCartsAsync();
+            return Ok(carts);
         }
 
         // GET: api/carts/{id}
         [HttpGet("carts/{id:guid}")]
-        public async Task<ActionResult<Category>> GetCartById(Guid id)
+        public async Task<ActionResult<CartReadDto>> GetCartById(Guid id)
         {
-            _logger.LogInformation($"Getting cart with ID: {id}");
-            var category = await _serviceManager.CartService.GetCartByIdAsync(id);
-            return Ok(category);
+            var cart = await _serviceManager.CartService.GetCartByIdAsync(id);
+            return Ok(cart);
         }
 
         // GET: api/customers/{customerId}/carts
         [HttpGet("customers/{customerId:guid}/carts")]
         public async Task<ActionResult<Cart>> GetCartsByCustomerId(Guid customerId)
         {
-            throw new NotImplementedException();
+            var cartItems = await _serviceManager.CartService.GetCartsByCustomerIdAsync(customerId);
+            return Ok(cartItems);
         }
 
         // POST: api/customers/{customerId}/carts
         [HttpPost("customers/{customerId:guid}/carts")]
-        public async Task<ActionResult> CreateCartForCustomer(Guid customerId, [FromBody] CartCreateDto cartCreateDto)
+        public async Task<ActionResult<CartReadDto>> CreateCartForCustomer(Guid customerId,
+            [FromBody] CartCreateDto cartCreateDto)
         {
-            _logger.LogInformation($"Adding cart with ID: {cartCreateDto} for Customer: {customerId}");
-            throw new NotImplementedException();
-            // return CreatedAtAction(nameof(GetCartsByCustomerId), new { id = cart.Id }, cart);
+            var cartToReturn = await _serviceManager.CartService
+                .CreateCartForCustomerAsync(customerId, cartCreateDto);
+            return CreatedAtAction(nameof(GetCartById), new { id = cartToReturn.Id }, cartToReturn);
         }
 
         // PUT: api/customers/{customerId}/cars/{id}
         [HttpPut("customers/{customerId:guid}/carts/{id:guid}")]
-        public async Task UpdateCartForCustomer(Guid customerId, Guid id)
+        public async Task UpdateCartItemForCustomer(Guid customerId, Guid id)
         {
-            _logger.LogInformation($"Updating cart with ID: {id} for Customer: {customerId}");
             throw new NotImplementedException();
         }
 
         // DELETE: api/customers/{customerId}/carts/{id}
         [HttpDelete("customers/{customerId:guid}/carts/{id:guid}")]
-        public async Task DeleteCartForCustomer(Guid customerId, Guid id)
+        public async Task DeleteCartItemForCustomer(Guid customerId, Guid id)
         {
-            _logger.LogInformation($"Deleting cart with ID: {id} for Customer: {customerId}");
             throw new NotImplementedException();
         }
     }

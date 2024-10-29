@@ -14,14 +14,58 @@ namespace StoreApi.Features.Carts
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Cart>> GetCartsAsync()
+        public async Task<IEnumerable<CartReadDto>> GetCartsAsync()
         {
-            return await _repositoryManager.CartRepository.GetCartsAsync();
+            _logger.LogInformation("Getting all carts");
+            var cartItems = await _repositoryManager.CartRepository.GetCartsAsync();
+            _logger.LogInformation("Returning all carts");
+            var cartItemsToReturn =
+                cartItems.Select(ci =>
+                    new CartReadDto
+                    (
+                        Id: ci.Id,
+                        ProductId: ci.ProductId,
+                        Quantity: ci.Quantity,
+                        ProductName: ci.Product.Name,
+                        UnitPrice: ci.Product.Price
+                    )
+                );
+            return cartItemsToReturn;
         }
 
-        public async Task<Cart> GetCartByIdAsync(Guid cartId)
+        public async Task<CartReadDto> GetCartByIdAsync(Guid cartId)
         {
-            return await _repositoryManager.CartRepository.GetCartByIdAsync(cartId);
+            _logger.LogInformation($"Getting cart with Id: {cartId}");
+            var cartItem = await _repositoryManager.CartRepository.GetCartByIdAsync(cartId);
+            _logger.LogInformation($"Returning cart with Id: {cartId}");
+            var cartItemToReturn = new CartReadDto
+            (
+                Id: cartItem.Id,
+                ProductId: cartItem.ProductId,
+                Quantity: cartItem.Quantity,
+                ProductName: cartItem.Product.Name,
+                UnitPrice: cartItem.Product.Price
+            );
+            return cartItemToReturn;
+        }
+
+        public async Task<IEnumerable<CartReadDto>> GetCartsByCustomerIdAsync(Guid customerId)
+        {
+            _logger.LogInformation($"Getting carts for Customer: {customerId}");
+            var cartItems = await _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId);
+            _logger.LogInformation($"Returning carts for Customer: {customerId}");
+            var cartItemsToReturn =
+                cartItems.Select(ci =>
+                    new CartReadDto
+                    (
+                        Id: ci.Id,
+                        ProductId: ci.ProductId,
+                        Quantity: ci.Quantity,
+                        ProductName: ci.Product.Name,
+                        UnitPrice: ci.Product.Price
+                    )
+                );
+            return cartItemsToReturn;
         }
 
         public async Task<CartReadDto> CreateCartForCustomerAsync(Guid customerId, CartCreateDto cartCreateDto)
@@ -35,16 +79,16 @@ namespace StoreApi.Features.Carts
                 CustomerId = customerId
             };
             _repositoryManager.CartRepository.CreateCartForCustomer(customerId, cartItem);
-            
+
             _logger.LogInformation($"Cart creation is successful for customer: {customerId}, saving to database");
             await _repositoryManager.SaveAsync();
 
             var product = await _repositoryManager.ProductRepository.GetProductByIdAsync(cartCreateDto.ProductId);
-            
             var cartToReturn = new CartReadDto
             (
+                Id: cartItem.Id,
                 ProductId: product.Id,
-                Quantity: cartCreateDto.Quantity,
+                Quantity: cartItem.Quantity,
                 ProductName: product.Name,
                 UnitPrice: product.Price
             );
