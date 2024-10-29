@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using StoreApi.Entities;
 using StoreApi.Features;
 
 namespace StoreApi.Features.Wishlists
@@ -33,6 +34,14 @@ namespace StoreApi.Features.Wishlists
             var wishlistItem = await _serviceManager.WishlistService.GetWishlistByIdAsync(id);
 
             return Ok(wishlistItem);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateWishlist([FromBody] Wishlist wishlist)
+        {
+            _logger.LogInformation($"Creating wishlist with ID: {wishlist.Id} ");
+            await _serviceManager.WishlistService.CreateWishlistAsync(wishlist);
+            return CreatedAtAction(nameof(GetWishlistItemById), new { id = wishlist.Id }, wishlist);
         }
     }
 }

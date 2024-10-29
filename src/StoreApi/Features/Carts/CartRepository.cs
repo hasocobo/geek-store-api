@@ -21,5 +21,11 @@ namespace StoreApi.Features.Carts
             return await FindByCondition(cart => cart.Id.Equals(cartId))
                 .SingleOrDefaultAsync() ?? throw new InvalidOperationException();
         }
+
+        public void CreateCartForCustomer(Guid customerId, Cart cart)
+        {
+            cart.CustomerId = customerId;
+            Create(cart);
+        }
     }
 }

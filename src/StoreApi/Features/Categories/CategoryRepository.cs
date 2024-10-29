@@ -23,5 +23,10 @@ namespace StoreApi.Features.Categories
                 .SingleOrDefaultAsync();
             return category ?? throw new InvalidOperationException();
         }
+
+        public void CreateCategory(Category category)
+        {
+            Create(category);
+        }
     }
 }

@@ -18,9 +18,15 @@ namespace StoreApi.Features.Orders
             return await _repositoryManager.OrderRepository.GetOrdersAsync();
         }
 
-        public Task<Order> GetOrderByIdAsync(Guid id)
+        public async Task<Order> GetOrderByIdAsync(Guid id)
         {
-            return _repositoryManager.OrderRepository.GetOrderByIdAsync(id);
+            return await _repositoryManager.OrderRepository.GetOrderByIdAsync(id);
+        }
+
+        public async Task CreateOrderAsync(Order order)
+        {
+            _repositoryManager.OrderRepository.CreateOrder(order);
+            await _repositoryManager.SaveAsync();
         }
     }
 }

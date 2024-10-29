@@ -6,5 +6,6 @@ namespace StoreApi.Features.Products
     {
         Task<IEnumerable<Product>> GetAllProductsAsync(); 
         Task<Product> GetProductByIdAsync(Guid productId);
+        void CreateProduct(Product product);
     }
 }

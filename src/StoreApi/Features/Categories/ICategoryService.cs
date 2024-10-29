@@ -6,5 +6,7 @@ namespace StoreApi.Features.Categories
     {
         Task<IEnumerable<Category>> GetCategoriesAsync();
         Task<Category> GetCategoryByIdAsync(Guid id);
+        
+        Task CreateCategoryAsync(Category category);
     }
 }

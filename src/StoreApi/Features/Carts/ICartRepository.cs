@@ -6,5 +6,7 @@ namespace StoreApi.Features.Carts
     {
         Task<IEnumerable<Cart>> GetCartsAsync();
         Task<Cart> GetCartByIdAsync(Guid cartId);
+        
+        void CreateCartForCustomer(Guid customerId, Cart cart);
     }
 }

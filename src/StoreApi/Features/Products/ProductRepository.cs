@@ -15,9 +15,15 @@ namespace StoreApi.Features.Products
             return await FindAll().ToListAsync();
         }
 
-        public Task<Product> GetProductByIdAsync(Guid productId)
+        public async Task<Product> GetProductByIdAsync(Guid productId)
         {
-            throw new NotImplementedException();
+            return await FindByCondition(p => p.Id.Equals(productId)).SingleOrDefaultAsync() ?? throw new
+                InvalidOperationException();
+        }
+
+        public void CreateProduct(Product product)
+        {
+            Create(product);
         }
     }
 }

@@ -40,7 +40,7 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] Product product)
     {
-        // TODO: Add the new product
+        await _serviceManager.ProductService.CreateProductAsync(product);
         return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
     }
 

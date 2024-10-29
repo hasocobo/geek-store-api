@@ -20,5 +20,10 @@ namespace StoreApi.Features.Orders
             return await FindByCondition(order => order.Id.Equals(orderId)).SingleOrDefaultAsync()
                    ?? throw new InvalidOperationException();
         }
+
+        public void CreateOrder(Order order)
+        {
+            Create(order);
+        }
     }
 }

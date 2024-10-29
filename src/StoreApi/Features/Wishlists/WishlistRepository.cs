@@ -22,5 +22,10 @@ namespace StoreApi.Features.Wishlists
                        .SingleOrDefaultAsync() ??
                    throw new InvalidOperationException();
         }
+
+        public void CreateWishlist(Wishlist wishlist)
+        {
+            Create(wishlist);
+        }
     }
 }

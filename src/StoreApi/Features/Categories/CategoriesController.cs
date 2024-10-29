@@ -33,5 +33,12 @@ namespace StoreApi.Features.Categories
             var category = await _serviceManager.CategoryService.GetCategoryByIdAsync(id);
             return Ok(category);
         }
+        
+        [HttpPost]
+        public async Task<ActionResult> CreateCategory([FromBody] Category category)
+        {
+            await _serviceManager.CategoryService.CreateCategoryAsync(category);
+            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
+        }
     }
 }

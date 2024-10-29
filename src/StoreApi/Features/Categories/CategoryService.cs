@@ -22,6 +22,11 @@ namespace StoreApi.Features.Categories
         {
             return await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
         }
-        
+
+        public async Task CreateCategoryAsync(Category category)
+        {
+            _repositoryManager.CategoryRepository.CreateCategory(category);
+            await _repositoryManager.SaveAsync();
+        }
     }
 }

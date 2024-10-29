@@ -8,5 +8,7 @@ namespace StoreApi.Features.Orders
         Task<IEnumerable<Order>> GetOrdersAsync();
         
         Task<Order> GetOrderByIdAsync(Guid orderId);
+        
+        void CreateOrder(Order order);
     }
 }

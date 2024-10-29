@@ -15,5 +15,7 @@ namespace StoreApi.Features
         IWishlistRepository WishlistRepository { get; }
         ICartRepository CartRepository { get; }
         ICustomerRepository CustomerRepository { get; }
+
+        Task SaveAsync();
     }
 }

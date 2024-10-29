@@ -18,14 +18,15 @@ namespace StoreApi.Features.Products
             return await _repositoryManager.ProductRepository.GetAllProductsAsync();
         }
 
-        public Task<Product> GetProductByIdAsync(Guid productId)
+        public async Task<Product> GetProductByIdAsync(Guid productId)
         {
-            throw new NotImplementedException();
+            return await _repositoryManager.ProductRepository.GetProductByIdAsync(productId);
         }
 
-        public Task CreateProductAsync(Product product)
-        {
-            throw new NotImplementedException();
+        public async Task CreateProductAsync(Product product)
+        { 
+            _repositoryManager.ProductRepository.CreateProduct(product);
+            await _repositoryManager.SaveAsync();
         }
 
         public Task UpdateProductAsync(Product product)

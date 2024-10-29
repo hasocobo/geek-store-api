@@ -21,5 +21,11 @@ namespace StoreApi.Features.Wishlists
         {
             return await _repositoryManager.WishlistRepository.GetWishlistByIdAsync(id);
         }
+
+        public async Task CreateWishlistAsync(Wishlist wishlist)
+        {
+            _repositoryManager.WishlistRepository.CreateWishlist(wishlist);
+            await _repositoryManager.SaveAsync();
+        }
     }
 }

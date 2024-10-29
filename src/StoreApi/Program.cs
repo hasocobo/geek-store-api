@@ -7,12 +7,6 @@ using StoreApi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-JsonSerializerOptions jsonSerializerOptions = new()
-{
-    ReferenceHandler = ReferenceHandler.IgnoreCycles,
-    WriteIndented = true
-};
-
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
@@ -35,6 +29,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.WriteIndented = true;
     });
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.ConfigureCors();
 
 

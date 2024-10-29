@@ -39,6 +39,6 @@ namespace StoreApi.Features
         public IWishlistRepository WishlistRepository => _wishlistRepository;
         public ICategoryRepository CategoryRepository => _categoryRepository;
 
-        public void SaveAsync() => _storeContext.SaveChangesAsync();
+        public async Task SaveAsync() => await _storeContext.SaveChangesAsync();
     }
 }

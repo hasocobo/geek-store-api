@@ -25,5 +25,10 @@ namespace StoreApi.Features.Customers
                     customer.Id.Equals(customerId))
                 .SingleOrDefaultAsync();
         }
+
+        public void CreateCustomer(Customer customer)
+        {
+            Create(customer);
+        }
     }
 }

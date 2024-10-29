@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StoreApi.Entities;
 
 namespace StoreApi.Features.Orders;
 
@@ -23,12 +24,20 @@ public class OrdersController : ControllerBase
         return Ok(orders);
     }
 
-    [HttpGet]
-    [Route("{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderById(Guid id)
     {
         _logger.LogInformation($"Fetching order with ID: {id}");
         var order = await _serviceManager.OrderService.GetOrderByIdAsync(id);
         return Ok(order);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateOrder([FromBody] Order order)
+    {
+        _logger.LogInformation($"Creating order with ID: {order.Id}");
+        await _serviceManager.OrderService.CreateOrderAsync(order);
+        return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
+    }
+    
 }
