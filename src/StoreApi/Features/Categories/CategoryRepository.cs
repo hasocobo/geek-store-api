@@ -28,5 +28,10 @@ namespace StoreApi.Features.Categories
         {
             Create(category);
         }
+
+        public void DeleteCategory(Category category)
+        {
+            Delete(category);
+        }
     }
 }

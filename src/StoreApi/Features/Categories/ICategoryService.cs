@@ -1,12 +1,15 @@
-﻿using StoreApi.Entities;
+﻿using StoreApi.Common.DataTransferObjects.Categories;
+using StoreApi.Entities;
 
 namespace StoreApi.Features.Categories
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<Category>> GetCategoriesAsync();
-        Task<Category> GetCategoryByIdAsync(Guid id);
+        Task<IEnumerable<CategoryReadDto>> GetCategoriesAsync();
+        Task<CategoryReadDto> GetCategoryByIdAsync(Guid id);
         
-        Task CreateCategoryAsync(Category category);
+        Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto category);
+        
+        Task DeleteCategoryAsync(Guid id);
     }
 }

@@ -9,5 +9,6 @@ namespace StoreApi.Features.Categories
         
         void CreateCategory(Category category);
         
+        void DeleteCategory(Category category);
     }
 }

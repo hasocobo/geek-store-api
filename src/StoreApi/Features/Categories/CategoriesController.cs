@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using StoreApi.Common.DataTransferObjects.Categories;
 using StoreApi.Entities;
 
 namespace StoreApi.Features.Categories
@@ -20,7 +21,7 @@ namespace StoreApi.Features.Categories
 
         // GET: api/categories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetCategories()
         {
             var categories = await _serviceManager.CategoryService.GetCategoriesAsync();
             return Ok(categories);
@@ -28,17 +29,26 @@ namespace StoreApi.Features.Categories
 
         // GET: api/categories/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(Guid id)
+        public async Task<ActionResult<CategoryReadDto>> GetCategory(Guid id)
         {
             var category = await _serviceManager.CategoryService.GetCategoryByIdAsync(id);
             return Ok(category);
         }
-        
+
         [HttpPost]
-        public async Task<ActionResult> CreateCategory([FromBody] Category category)
+        public async Task<ActionResult> CreateCategory([FromBody] CategoryCreateDto categoryCreateDto)
         {
-            await _serviceManager.CategoryService.CreateCategoryAsync(category);
-            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
+            var categoryToReturn =
+                await _serviceManager.CategoryService.CreateCategoryAsync(categoryCreateDto);
+            
+            return CreatedAtAction(nameof(GetCategory), new { id = categoryToReturn.Id }, categoryToReturn);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteCategory(Guid id)
+        {
+            await _serviceManager.CategoryService.DeleteCategoryAsync(id);
+            return NoContent();
         }
     }
 }

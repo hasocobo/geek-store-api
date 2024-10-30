@@ -70,7 +70,7 @@ namespace StoreApi.Features.Carts
 
         public async Task<CartReadDto> CreateCartForCustomerAsync(Guid customerId, CartCreateDto cartCreateDto)
         {
-            _logger.LogInformation($"Creating cart for customer: {customerId}");
+            _logger.LogInformation($"Creating cart for customer: {customerId}.");
             var cartItem = new Cart
             {
                 Id = Guid.NewGuid(),
@@ -80,9 +80,10 @@ namespace StoreApi.Features.Carts
             };
             _repositoryManager.CartRepository.CreateCartForCustomer(customerId, cartItem);
 
-            _logger.LogInformation($"Cart creation is successful for customer: {customerId}, saving to database");
+            _logger.LogInformation($"Cart creation is successful for customer: {customerId}, saving to database.");
             await _repositoryManager.SaveAsync();
 
+            _logger.LogInformation($"Cart saved successfully, returning read-only cart object.");
             var product = await _repositoryManager.ProductRepository.GetProductByIdAsync(cartCreateDto.ProductId);
             var cartToReturn = new CartReadDto
             (
