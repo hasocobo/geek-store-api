@@ -12,20 +12,36 @@ namespace StoreApi.Features.Wishlists
 
         public async Task<IEnumerable<Wishlist>> GetWishlistsAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                .Include(wi => wi.Product)
+                .ToListAsync();
         }
 
         public async Task<Wishlist> GetWishlistByIdAsync(Guid id)
         {
             return await FindByCondition(wishlist =>
                            wishlist.Id.Equals(id))
+                       .Include(wi => wi.Product)
                        .SingleOrDefaultAsync() ??
                    throw new InvalidOperationException();
         }
 
-        public void CreateWishlist(Wishlist wishlist)
+        public async Task<IEnumerable<Wishlist>> GetWishlistByCustomerIdAsync(Guid customerId)
         {
+            return await FindByCondition(wi => wi.CustomerId.Equals(customerId))
+                .Include(wi => wi.Product)
+                .ToListAsync();
+        }
+
+        public void CreateWishlist(Guid customerId, Wishlist wishlist)
+        {
+            wishlist.CustomerId = customerId;
             Create(wishlist);
+        }
+
+        public void DeleteWishlist(Wishlist wishlist)
+        {
+            Delete(wishlist);
         }
     }
 }

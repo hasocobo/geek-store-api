@@ -1,12 +1,16 @@
-﻿using StoreApi.Entities;
+﻿using StoreApi.Common.DataTransferObjects.Wishlists;
+using StoreApi.Entities;
 
 namespace StoreApi.Features.Wishlists
 {
     public interface IWishlistService
     {
-        Task<IEnumerable<Wishlist>> GetWishlistsAsync();
-        Task<Wishlist> GetWishlistByIdAsync(Guid id);
+        Task<IEnumerable<WishlistReadDto>> GetWishlistsAsync();
+        Task<WishlistReadDto> GetWishlistItemByIdAsync(Guid id);
+        Task<IEnumerable<WishlistReadDto>> GetWishlistByCustomerIdAsync(Guid customerId);
         
-        Task CreateWishlistAsync(Wishlist wishlist);
+        Task<WishlistReadDto> CreateWishlistItemForCustomerAsync(Guid customerId, WishlistCreateDto wishlist);
+        
+        Task DeleteWishlistItemAsync(Guid id);
     }
 }

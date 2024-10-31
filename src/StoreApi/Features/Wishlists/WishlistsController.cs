@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using StoreApi.Common.DataTransferObjects.Wishlists;
 using StoreApi.Entities;
 using StoreApi.Features;
 
 namespace StoreApi.Features.Wishlists
 {
     [ApiController]
-    [Route("api/v1/wishlists")]
+    [Route("api/v1/")]
     public class WishlistController : ControllerBase
     {
         private readonly ILogger<WishlistController> _logger;
@@ -19,29 +20,46 @@ namespace StoreApi.Features.Wishlists
             _serviceManager = serviceManager;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetWishlistItems()
+        [HttpGet("wishlists")]
+        public async Task<ActionResult<IEnumerable<WishlistReadDto>>> GetWishlists()
         {
-            _logger.LogInformation("Fetching wishlist items");
             var wishlistItems = await _serviceManager.WishlistService.GetWishlistsAsync();
             return Ok(wishlistItems);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetWishlistItemById(Guid id)
+        [HttpGet("wishlists/{id}")]
+        public async Task<ActionResult<WishlistReadDto>> GetWishlistItemById(Guid id)
         {
-            _logger.LogInformation($"Fetching wishlist item with id {id}");
-            var wishlistItem = await _serviceManager.WishlistService.GetWishlistByIdAsync(id);
+            var wishlistItem = await _serviceManager.WishlistService.GetWishlistItemByIdAsync(id);
 
             return Ok(wishlistItem);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateWishlist([FromBody] Wishlist wishlist)
+        [HttpGet("customers/{customerId}/wishlist")]
+        public async Task<ActionResult<IEnumerable<WishlistReadDto>>> GetWishlistByCustomerId(Guid customerId)
         {
-            _logger.LogInformation($"Creating wishlist with ID: {wishlist.Id} ");
-            await _serviceManager.WishlistService.CreateWishlistAsync(wishlist);
-            return CreatedAtAction(nameof(GetWishlistItemById), new { id = wishlist.Id }, wishlist);
+            var wishlist = await 
+                _serviceManager.WishlistService.GetWishlistByCustomerIdAsync(customerId);
+
+            return Ok(wishlist);
+        }
+
+        [HttpPost("customers/{customerId}/wishlist")]
+        public async Task<ActionResult> CreateWishlistItem(Guid customerId,
+            [FromBody] WishlistCreateDto wishlistCreateDto)
+        {
+            var wishlistToReturn =
+                await _serviceManager.WishlistService.CreateWishlistItemForCustomerAsync(customerId, wishlistCreateDto);
+
+            return CreatedAtAction(nameof(GetWishlistItemById),
+                new { id = wishlistToReturn.Id }, wishlistToReturn);
+        }
+
+        [HttpDelete("wishlists/{id}")]
+        public async Task<ActionResult> DeleteWishlistItem(Guid id)
+        {
+            await _serviceManager.WishlistService.DeleteWishlistItemAsync(id);
+            return NoContent();
         }
     }
 }
