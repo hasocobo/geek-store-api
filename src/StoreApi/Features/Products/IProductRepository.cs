@@ -4,8 +4,11 @@ namespace StoreApi.Features.Products
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllProductsAsync(); 
+        Task<IEnumerable<Product>> GetProductsAsync(); 
         Task<Product> GetProductByIdAsync(Guid productId);
-        void CreateProduct(Product product);
+        Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(Guid categoryId);
+        void CreateProduct(Guid categoryId, Product product);
+        
+        void DeleteProduct(Product product);
     }
 }
