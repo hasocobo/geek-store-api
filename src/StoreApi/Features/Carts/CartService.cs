@@ -78,7 +78,7 @@ namespace StoreApi.Features.Carts
                 Quantity = cartCreateDto.Quantity,
                 CustomerId = customerId
             };
-            _repositoryManager.CartRepository.CreateCartForCustomer(customerId, cartItem);
+            _repositoryManager.CartRepository.AddToCart(cartItem);
 
             _logger.LogInformation($"Cart creation is successful for customer: {customerId}, saving to database.");
             await _repositoryManager.SaveAsync();

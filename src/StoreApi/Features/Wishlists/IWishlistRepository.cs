@@ -7,7 +7,7 @@ namespace StoreApi.Features.Wishlists
         Task<IEnumerable<Wishlist>> GetWishlistsAsync();
         Task<Wishlist> GetWishlistByIdAsync(Guid id);
         Task<IEnumerable<Wishlist>> GetWishlistByCustomerIdAsync(Guid customerId);
-        void CreateWishlist(Guid customerId, Wishlist wishlist);
+        void CreateWishlist(Wishlist wishlist);
         void DeleteWishlist(Wishlist wishlist);
     }
 }

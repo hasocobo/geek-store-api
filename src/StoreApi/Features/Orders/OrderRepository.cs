@@ -12,12 +12,26 @@ namespace StoreApi.Features.Orders
 
         public async Task<IEnumerable<Order>> GetOrdersAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(Guid customerId)
+        {
+            return await FindByCondition(o => o.CustomerId.Equals(customerId))
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .ToListAsync();
         }
 
         public async Task<Order> GetOrderByIdAsync(Guid orderId)
         {
-            return await FindByCondition(order => order.Id.Equals(orderId)).SingleOrDefaultAsync()
+            return await FindByCondition(order => order.Id.Equals(orderId))
+                       .Include(o => o.OrderItems)
+                       .ThenInclude(oi => oi.Product)
+                       .SingleOrDefaultAsync()
                    ?? throw new InvalidOperationException();
         }
 

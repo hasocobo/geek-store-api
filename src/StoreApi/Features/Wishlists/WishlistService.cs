@@ -81,7 +81,7 @@ namespace StoreApi.Features.Wishlists
                 CustomerId = customerId,
                 ProductId = wishlistCreateDto.ProductId
             };
-            _repositoryManager.WishlistRepository.CreateWishlist(customerId, wishlistItem);
+            _repositoryManager.WishlistRepository.CreateWishlist(wishlistItem);
             await _repositoryManager.SaveAsync();
 
             _logger.LogInformation($"Wishlist for customer: {customerId} successfully created");

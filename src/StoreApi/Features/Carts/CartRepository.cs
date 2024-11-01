@@ -19,19 +19,19 @@ namespace StoreApi.Features.Carts
         public async Task<Cart> GetCartByIdAsync(Guid cartId)
         {
             return await FindByCondition(cart => cart.Id.Equals(cartId))
+                .Include(ci => ci.Product)
                 .SingleOrDefaultAsync() ?? throw new InvalidOperationException();
         }
 
         public async Task<IEnumerable<Cart>> GetCartsByCustomerIdAsync(Guid customerId)
         {
             return await FindByCondition(cart => cart.CustomerId.Equals(customerId))
-                .Include(c => c.Product)
+                .Include(ci => ci.Product)
                 .ToListAsync();
         }
 
-        public void CreateCartForCustomer(Guid customerId, Cart cart)
+        public void AddToCart(Cart cart)
         {
-            cart.CustomerId = customerId;
             Create(cart);
         }
 

@@ -33,9 +33,8 @@ namespace StoreApi.Features.Wishlists
                 .ToListAsync();
         }
 
-        public void CreateWishlist(Guid customerId, Wishlist wishlist)
+        public void CreateWishlist(Wishlist wishlist)
         {
-            wishlist.CustomerId = customerId;
             Create(wishlist);
         }
 

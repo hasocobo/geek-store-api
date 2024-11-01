@@ -1,12 +1,14 @@
-﻿using StoreApi.Entities;
+﻿using StoreApi.Common.DataTransferObjects.Orders;
+using StoreApi.Entities;
 
 namespace StoreApi.Features.Orders
 {
     public interface IOrderService
     {
-        Task<IEnumerable<Order>> GetOrdersAsync();
-        Task<Order> GetOrderByIdAsync(Guid id);
+        Task<IEnumerable<OrderReadDto>> GetOrdersAsync();
+        Task<IEnumerable<OrderReadDto>> GetOrdersByCustomerIdAsync(Guid customerId);
+        Task<OrderReadDto> GetOrderByIdAsync(Guid id);
         
-        Task CreateOrderAsync(Order order);
+        Task<OrderReadDto> CreateOrderForCustomerAsync(Guid customerId, OrderCreateDto orderCreateDto);
     }
 }
