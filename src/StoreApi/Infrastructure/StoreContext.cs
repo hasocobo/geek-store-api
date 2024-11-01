@@ -58,14 +58,14 @@ namespace StoreApi.Infrastructure
             {
                 entity.HasKey(e => new { e.Id, e.CustomerId }); // Composite Key
 
-                // One Cart to One Customer (FK already defined in Customer entity)
+                // Many Cart to One Customer (FK already defined in Customer entity)
                 entity
                     .HasOne(e => e.Customer)
                     .WithMany(e => e.Carts)
                     .HasForeignKey(e => e.CustomerId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // One Cart to One Product
+                // Many Cart to One Product
                 entity
                     .HasOne(e => e.Product)
                     .WithMany(e => e.Carts)
@@ -170,7 +170,7 @@ namespace StoreApi.Infrastructure
                     .HasForeignKey(e => e.CategoryId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-
+            // Seed initial data
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new CustomerConfiguration());

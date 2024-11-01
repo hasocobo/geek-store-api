@@ -163,5 +163,14 @@ namespace StoreApi.Features.Orders
 
             return orderToReturn;
         }
+
+        public async Task DeleteOrderAsync(Guid orderId)
+        {
+            _logger.LogInformation($"Fetching order by Id: {orderId}");
+            var orderToDelete = await _repositoryManager.OrderRepository.GetOrderByIdAsync(orderId);
+            
+            _repositoryManager.OrderRepository.DeleteOrder(orderToDelete);
+            await _repositoryManager.SaveAsync();
+        }
     }
 }

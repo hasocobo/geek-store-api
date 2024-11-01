@@ -47,4 +47,11 @@ public class OrdersController : ControllerBase
 
         return CreatedAtAction(nameof(GetOrderById), new { id = orderToReturn.Id }, orderToReturn);
     }
+
+    [HttpDelete("orders/{id}")]
+    public async Task<ActionResult> DeleteOrder(Guid id)
+    {
+        await _serviceManager.OrderService.DeleteOrderAsync(id);
+        return NoContent();
+    }
 }

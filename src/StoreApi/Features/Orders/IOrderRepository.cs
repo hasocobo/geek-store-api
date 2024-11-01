@@ -11,5 +11,6 @@ namespace StoreApi.Features.Orders
         Task<Order> GetOrderByIdAsync(Guid orderId);
         
         void CreateOrder(Order order);
+        void DeleteOrder(Order order);
     }
 }

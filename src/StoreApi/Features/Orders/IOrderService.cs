@@ -8,7 +8,7 @@ namespace StoreApi.Features.Orders
         Task<IEnumerable<OrderReadDto>> GetOrdersAsync();
         Task<IEnumerable<OrderReadDto>> GetOrdersByCustomerIdAsync(Guid customerId);
         Task<OrderReadDto> GetOrderByIdAsync(Guid id);
-        
         Task<OrderReadDto> CreateOrderForCustomerAsync(Guid customerId, OrderCreateDto orderCreateDto);
+        Task DeleteOrderAsync(Guid id);
     }
 }
