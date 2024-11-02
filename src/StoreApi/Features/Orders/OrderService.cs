@@ -34,7 +34,7 @@ namespace StoreApi.Features.Orders
                             Id: oi.Id,
                             ProductId: oi.ProductId,
                             ProductName: oi.Product.Name,
-                            UnitPrice: oi.Product.Price,
+                            UnitPrice: oi.Price, // not oi.Product.Price because then it results in inconsistency in case of a price change.
                             Quantity: oi.Quantity
                         )).ToList()
                 )
@@ -63,7 +63,7 @@ namespace StoreApi.Features.Orders
                             Id: oi.Id,
                             ProductId: oi.ProductId,
                             ProductName: oi.Product.Name,
-                            UnitPrice: oi.Product.Price,
+                            UnitPrice: oi.Price, 
                             Quantity: oi.Quantity
                         )).ToList()
                 )
@@ -90,7 +90,7 @@ namespace StoreApi.Features.Orders
                         Id: oi.Id,
                         ProductId: oi.ProductId,
                         ProductName: oi.Product.Name,
-                        UnitPrice: oi.Product.Price,
+                        UnitPrice: oi.Price,
                         Quantity: oi.Quantity
                     )).ToList()
             );
@@ -146,7 +146,7 @@ namespace StoreApi.Features.Orders
                     Id: oi.Id,
                     ProductId: oi.ProductId,
                     ProductName: oi.Product.Name,
-                    UnitPrice: oi.Product.Price,
+                    UnitPrice: oi.Price,
                     Quantity: oi.Quantity
                 )
             ).ToList();
