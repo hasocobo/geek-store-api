@@ -44,7 +44,14 @@ namespace StoreApi.Features.Categories
             return CreatedAtAction(nameof(GetCategory), new { id = categoryToReturn.Id }, categoryToReturn);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> UpdateCategory(Guid id, [FromBody] CategoryUpdateDto categoryUpdateDto)
+        {
+            await _serviceManager.CategoryService.UpdateCategoryAsync(id, categoryUpdateDto);
+            return NoContent();
+        }
+
+        [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteCategory(Guid id)
         {
             await _serviceManager.CategoryService.DeleteCategoryAsync(id);

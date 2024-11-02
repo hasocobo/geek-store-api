@@ -46,6 +46,19 @@ namespace StoreApi.Features.Categories
             return categoryToReturn;
         }
 
+        public async Task UpdateCategoryAsync(Guid id, CategoryUpdateDto categoryUpdateDto)
+        {
+            _logger.LogInformation($"Fetching category with id: {id} to update");
+            var categoryToUpdate = await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+            
+            _logger.LogInformation($"Updating category with id: {id}");
+            categoryToUpdate.Name = categoryUpdateDto.Name;
+            _repositoryManager.CategoryRepository.UpdateCategory(categoryToUpdate);
+            
+            await _repositoryManager.SaveAsync();
+            
+        }
+
         public async Task DeleteCategoryAsync(Guid id)
         {
             _logger.LogInformation($"Fetching category with id: {id}");

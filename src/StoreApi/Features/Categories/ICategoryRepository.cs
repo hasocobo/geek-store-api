@@ -8,7 +8,7 @@ namespace StoreApi.Features.Categories
         Task<Category> GetCategoryByIdAsync(Guid categoryId);
         
         void CreateCategory(Category category);
-        
+        void UpdateCategory(Category category);
         void DeleteCategory(Category category);
     }
 }

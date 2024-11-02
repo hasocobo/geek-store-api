@@ -9,7 +9,7 @@ namespace StoreApi.Features.Categories
         Task<CategoryReadDto> GetCategoryByIdAsync(Guid id);
         
         Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto category);
-        
+        Task UpdateCategoryAsync(Guid id, CategoryUpdateDto categoryUpdateDto);
         Task DeleteCategoryAsync(Guid id);
     }
 }
