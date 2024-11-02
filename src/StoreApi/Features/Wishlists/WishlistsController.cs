@@ -54,6 +54,9 @@ namespace StoreApi.Features.Wishlists
             return CreatedAtAction(nameof(GetWishlistItemById),
                 new { id = wishlistToReturn.Id }, wishlistToReturn);
         }
+        
+        // Updating wishlist items only consist of adding or removing them from the list,
+        // so no need for a put method.
 
         [HttpDelete("wishlists/{id}")]
         public async Task<ActionResult> DeleteWishlistItem(Guid id)

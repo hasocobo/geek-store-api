@@ -48,7 +48,7 @@ namespace StoreApi.Features.Categories
         public async Task<ActionResult> UpdateCategory(Guid id, [FromBody] CategoryUpdateDto categoryUpdateDto)
         {
             await _serviceManager.CategoryService.UpdateCategoryAsync(id, categoryUpdateDto);
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id:guid}")]

@@ -53,7 +53,7 @@ namespace StoreApi.Features.Carts
         public async Task<ActionResult> UpdateCartItemForCustomer(Guid customerId, Guid id, CartUpdateDto cartUpdateDto)
         {
             await _serviceManager.CartService.UpdateCartAsync(customerId, id, cartUpdateDto);
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("carts/{id:guid}")]
