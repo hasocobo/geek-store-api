@@ -9,7 +9,7 @@ namespace StoreApi.Features.Products
         Task<IEnumerable<ProductReadDto>> GetProductsByCategoryIdAsync(Guid categoryId);
         Task<ProductReadDto> GetProductByIdAsync(Guid productId);
         Task<ProductReadDto> CreateProductAsync(Guid categoryId, ProductCreateDto productCreateDto);
-        Task UpdateProductAsync(Product product);
+        Task UpdateProductAsync(Guid id, ProductUpdateDto productUpdateDto);
         Task DeleteProductAsync(Guid productId);
     }
 }

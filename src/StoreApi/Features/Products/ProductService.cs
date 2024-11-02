@@ -102,9 +102,22 @@ namespace StoreApi.Features.Products
             return productToReturn;
         }
 
-        public Task UpdateProductAsync(Product product)
+        public async Task UpdateProductAsync(Guid productId, ProductUpdateDto productUpdateDto)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Fetching product with ID: {productId} to update.");
+            var productToUpdate = await
+                _repositoryManager.ProductRepository.GetProductByIdAsync(productId);
+
+            _logger.LogInformation($"Updating product with ID: {productId}");
+            if (productUpdateDto.Name != null) productToUpdate.Name = productUpdateDto.Name;
+            if (productUpdateDto.Price.HasValue) productToUpdate.Price = productUpdateDto.Price.Value;
+            if (productUpdateDto.Description != null) productToUpdate.Description = productUpdateDto.Description;
+            if (productUpdateDto.Sku != null) productToUpdate.Sku = productUpdateDto.Sku;
+            if (productUpdateDto.CategoryId != null) productToUpdate.CategoryId = productUpdateDto.CategoryId.Value;
+            
+            _repositoryManager.ProductRepository.UpdateProduct(productToUpdate);
+            
+            await _repositoryManager.SaveAsync();
         }
 
         public async Task DeleteProductAsync(Guid productId)

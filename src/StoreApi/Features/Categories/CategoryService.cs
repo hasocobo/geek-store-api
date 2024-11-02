@@ -56,7 +56,6 @@ namespace StoreApi.Features.Categories
             _repositoryManager.CategoryRepository.UpdateCategory(categoryToUpdate);
             
             await _repositoryManager.SaveAsync();
-            
         }
 
         public async Task DeleteCategoryAsync(Guid id)

@@ -8,7 +8,7 @@ namespace StoreApi.Features.Products
         Task<Product> GetProductByIdAsync(Guid productId);
         Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(Guid categoryId);
         void CreateProduct(Guid categoryId, Product product);
-        
+        void UpdateProduct(Product product);
         void DeleteProduct(Product product);
     }
 }

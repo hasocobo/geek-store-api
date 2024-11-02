@@ -51,19 +51,14 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateProduct(Guid id, [FromBody] Product product)
+    [HttpPut("products/{id}")]
+    public async Task<ActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto productUpdateDto)
     {
-        // TODO: Update the product by id
-        if (id != product.Id)
-        {
-            return BadRequest(new { Message = "Product ID mismatch" });
-        }
-
-        return NoContent();
+        await _serviceManager.ProductService.UpdateProductAsync(id, productUpdateDto);
+        return Ok();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("products/{id}")]
     public async Task<IActionResult> DeleteProduct(Guid id)
     {
         await _serviceManager.ProductService.DeleteProductAsync(id);
