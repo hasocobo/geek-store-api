@@ -35,6 +35,11 @@ namespace StoreApi.Features.Carts
             Create(cart);
         }
 
+        public void UpdateCart(Cart cart)
+        {
+            Update(cart);
+        }
+
         public void DeleteCart(Cart cart)
         {
             Delete(cart);

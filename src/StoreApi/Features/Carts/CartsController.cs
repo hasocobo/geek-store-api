@@ -19,7 +19,6 @@ namespace StoreApi.Features.Carts
             _logger = logger;
         }
 
-        // GET: api/carts
         [HttpGet("carts")]
         public async Task<ActionResult<IEnumerable<CartReadDto>>> GetCarts()
         {
@@ -27,7 +26,6 @@ namespace StoreApi.Features.Carts
             return Ok(carts);
         }
 
-        // GET: api/carts/{id}
         [HttpGet("carts/{id:guid}")]
         public async Task<ActionResult<CartReadDto>> GetCartById(Guid id)
         {
@@ -35,7 +33,6 @@ namespace StoreApi.Features.Carts
             return Ok(cart);
         }
 
-        // GET: api/customers/{customerId}/carts
         [HttpGet("customers/{customerId:guid}/carts")]
         public async Task<ActionResult<Cart>> GetCartsByCustomerId(Guid customerId)
         {
@@ -43,7 +40,6 @@ namespace StoreApi.Features.Carts
             return Ok(cartItems);
         }
 
-        // POST: api/customers/{customerId}/carts
         [HttpPost("customers/{customerId:guid}/carts")]
         public async Task<ActionResult<CartReadDto>> CreateCartForCustomer(Guid customerId,
             [FromBody] CartCreateDto cartCreateDto)
@@ -53,14 +49,13 @@ namespace StoreApi.Features.Carts
             return CreatedAtAction(nameof(GetCartById), new { id = cartToReturn.Id }, cartToReturn);
         }
 
-        // PUT: api/customers/{customerId}/carts/{id}
         [HttpPut("customers/{customerId:guid}/carts/{id:guid}")]
-        public async Task UpdateCartItemForCustomer(Guid customerId, Guid id)
+        public async Task<ActionResult> UpdateCartItemForCustomer(Guid customerId, Guid id, CartUpdateDto cartUpdateDto)
         {
-            throw new NotImplementedException();
+            await _serviceManager.CartService.UpdateCartAsync(customerId, id, cartUpdateDto);
+            return NoContent();
         }
 
-        // DELETE: api/carts/{cartId}
         [HttpDelete("carts/{id:guid}")]
         public async Task<ActionResult> DeleteCartItem(Guid id)
         {

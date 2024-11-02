@@ -37,6 +37,7 @@ namespace StoreApi.Features.Carts
         {
             _logger.LogInformation($"Getting cart with Id: {cartId}");
             var cartItem = await _repositoryManager.CartRepository.GetCartByIdAsync(cartId);
+            
             _logger.LogInformation($"Returning cart with Id: {cartId}");
             var cartItemToReturn = new CartReadDto
             (
@@ -53,6 +54,7 @@ namespace StoreApi.Features.Carts
         {
             _logger.LogInformation($"Getting carts for Customer: {customerId}");
             var cartItems = await _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId);
+            
             _logger.LogInformation($"Returning carts for Customer: {customerId}");
             var cartItemsToReturn =
                 cartItems.Select(ci =>
@@ -96,12 +98,26 @@ namespace StoreApi.Features.Carts
             return cartToReturn;
         }
 
+        public async Task UpdateCartAsync(Guid customerId, Guid id, CartUpdateDto cartUpdateDto)
+        {
+            _logger.LogInformation($"Fetching cart item: {id} for customer: {customerId} to update.");
+            var cartToUpdate = await _repositoryManager.CartRepository.GetCartByIdAsync(id);
+            
+            _logger.LogInformation($"Updating cart item: {id} for customer: {customerId}.");
+            cartToUpdate.Quantity = cartUpdateDto.Quantity;
+            _repositoryManager.CartRepository.UpdateCart(cartToUpdate);
+            
+            await _repositoryManager.SaveAsync();
+        }
+
         public async Task DeleteCartAsync(Guid id)
         {
             _logger.LogInformation($"Fetching cart to delete with Id: {id}");
             var cart = await _repositoryManager.CartRepository.GetCartByIdAsync(id);
+            
             _logger.LogInformation($"Deleting cart with Id: {id}");
             _repositoryManager.CartRepository.DeleteCart(cart);
+            
             await _repositoryManager.SaveAsync();
         }
     }
