@@ -48,6 +48,13 @@ public class OrdersController : ControllerBase
         return CreatedAtAction(nameof(GetOrderById), new { id = orderToReturn.Id }, orderToReturn);
     }
 
+    [HttpPut("orders/{id}")]
+    public Task<ActionResult> UpdateOrder(Guid id)
+    {
+        // TODO: Implement changing order status
+        throw new NotImplementedException();
+    }
+        
     [HttpDelete("orders/{id}")]
     public async Task<ActionResult> DeleteOrder(Guid id)
     {

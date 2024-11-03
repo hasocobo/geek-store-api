@@ -18,6 +18,7 @@ namespace StoreApi.Features.Carts
         {
             _logger.LogInformation("Getting all carts");
             var cartItems = await _repositoryManager.CartRepository.GetCartsAsync();
+           
             _logger.LogInformation("Returning all carts");
             var cartItemsToReturn =
                 cartItems.Select(ci =>

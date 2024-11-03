@@ -1,10 +1,13 @@
-﻿using StoreApi.Features;
+﻿using Microsoft.AspNetCore.Identity;
+using StoreApi.Entities;
+using StoreApi.Features;
 using StoreApi.Features.Carts;
 using StoreApi.Features.Categories;
 using StoreApi.Features.Customers;
 using StoreApi.Features.Orders;
 using StoreApi.Features.Products;
 using StoreApi.Features.Wishlists;
+using StoreApi.Infrastructure;
 
 namespace StoreApi.Extensions
 {
@@ -41,6 +44,18 @@ namespace StoreApi.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IWishlistService, WishlistService>();
             services.AddScoped<IServiceManager, ServiceManager>();
+        }
+
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            var builder = services.AddIdentity<User, IdentityRole>(o =>
+                {
+                    o.Password.RequireDigit = true;
+                    o.User.RequireUniqueEmail = true;
+                    o.Password.RequiredLength = 8;
+                })
+                .AddEntityFrameworkStores<StoreContext>()
+                .AddDefaultTokenProviders();
         }
     }
 }

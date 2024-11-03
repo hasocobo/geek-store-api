@@ -11,19 +11,17 @@ namespace StoreApi.Infrastructure.Configuration
             builder.HasData(
                 new Customer
                 {
-                    Id = new Guid("860C06FB-FD88-4661-BBBA-9AFEFE9CCC3F"),
-                    Name = "Hasan Çoban",
+                    Id = new Guid("860C06FB-FD88-4661-BBBA-9AFEFE9CCC3F"), //Hasan Çoban
                     Address = "İzmir",
-                    Email = "hasancoban@std.iyte.edu.tr",
                     PhoneNumber = "5316731512",
+                    UserId = "000C06FB-FD88-4661-BBBA-9AFEFE9CCC3F"
                 },
                 new Customer
                 {
-                    Id = new Guid("4D4D5339-B460-4AFE-A131-9DE34DE8EE69"),
-                    Name = "Bora Ersoy",
+                    Id = new Guid("4D4D5339-B460-4AFE-A131-9DE34DE8EE69"), //Bora Ersoy
                     Address = "İzmir",
-                    Email = "boraersoy@std.iyte.edu.tr",
                     PhoneNumber = "5416731512",
+                    UserId = "111C06FB-FD88-4661-BBBA-9AFEFE9CCC3F"
                 }
             );
         }

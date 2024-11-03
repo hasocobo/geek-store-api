@@ -1,15 +1,17 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StoreApi.Entities;
 using StoreApi.Infrastructure.Configuration;
 
 namespace StoreApi.Infrastructure
 {
-    public class StoreContext : DbContext
+    public class StoreContext : IdentityDbContext<User>
     {
-        
         public StoreContext(DbContextOptions options)
-            : base(options) { }
+            : base(options)
+        {
+        }
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -39,19 +41,19 @@ namespace StoreApi.Infrastructure
                     .HasMany(e => e.Orders)
                     .WithOne(e => e.Customer)
                     .HasForeignKey(e => e.CustomerId)
-                    .OnDelete(DeleteBehavior.Restrict); // Restrict instead of Cascade
+                    .OnDelete(DeleteBehavior.Cascade); // Restrict instead of Cascade
 
                 entity
                     .HasMany(e => e.Carts)
                     .WithOne(e => e.Customer)
                     .HasForeignKey(e => e.CustomerId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity
                     .HasMany(e => e.Wishlists)
                     .WithOne(e => e.Customer)
                     .HasForeignKey(e => e.CustomerId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Cart>(entity =>
@@ -63,14 +65,14 @@ namespace StoreApi.Infrastructure
                     .HasOne(e => e.Customer)
                     .WithMany(e => e.Carts)
                     .HasForeignKey(e => e.CustomerId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 // Many Cart to One Product
                 entity
                     .HasOne(e => e.Product)
                     .WithMany(e => e.Carts)
                     .HasForeignKey(e => e.ProductId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Wishlist>(entity =>
@@ -154,7 +156,7 @@ namespace StoreApi.Infrastructure
 
                 // One Product to Many Categories
                 entity
-                    .HasOne(e => e.Category)    
+                    .HasOne(e => e.Category)
                     .WithMany(e => e.Products)
                     .HasForeignKey(e => e.CategoryId);
             });
@@ -168,16 +170,29 @@ namespace StoreApi.Infrastructure
                     .HasMany(e => e.Products)
                     .WithOne(e => e.Category)
                     .HasForeignKey(e => e.CategoryId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity
+                    .HasOne(e => e.Customer)
+                    .WithOne(e => e.User)
+                    .HasForeignKey<Customer>(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            
             // Seed initial data
-            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
-            modelBuilder.ApplyConfiguration(new ProductConfiguration());
-            modelBuilder.ApplyConfiguration(new CustomerConfiguration());
-            modelBuilder.ApplyConfiguration(new WishlistConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
-            modelBuilder.ApplyConfiguration(new CartConfiguration());
+            //modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            //modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            //modelBuilder.ApplyConfiguration(new UserConfiguration());
+            //modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+            //modelBuilder.ApplyConfiguration(new WishlistConfiguration());
+            //modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            //modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+            //modelBuilder.ApplyConfiguration(new CartConfiguration());
         }
     }
 }
