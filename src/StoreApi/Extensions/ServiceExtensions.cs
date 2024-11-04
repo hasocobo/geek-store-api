@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using StoreApi.Entities;
 using StoreApi.Features;
+using StoreApi.Features.Authentication;
 using StoreApi.Features.Carts;
 using StoreApi.Features.Categories;
 using StoreApi.Features.Customers;
@@ -43,6 +44,7 @@ namespace StoreApi.Extensions
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IWishlistService, WishlistService>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IServiceManager, ServiceManager>();
         }
 
@@ -50,9 +52,11 @@ namespace StoreApi.Extensions
         {
             var builder = services.AddIdentity<User, IdentityRole>(o =>
                 {
-                    o.Password.RequireDigit = true;
                     o.User.RequireUniqueEmail = true;
                     o.Password.RequiredLength = 8;
+                    o.Password.RequireNonAlphanumeric = false;
+                    o.Password.RequireUppercase = false;
+                    o.Password.RequireLowercase = false;
                 })
                 .AddEntityFrameworkStores<StoreContext>()
                 .AddDefaultTokenProviders();

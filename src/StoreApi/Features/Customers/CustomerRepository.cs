@@ -13,6 +13,7 @@ namespace StoreApi.Features.Customers
         public async Task<IEnumerable<Customer>> GetCustomersAsync()
         {
             return await FindAll()
+                .Include(customer => customer.User)
                 .Include(customer => customer.Orders)
                 .Include(customer => customer.Carts)
                 .Include(customer => customer.Wishlists)
@@ -23,6 +24,7 @@ namespace StoreApi.Features.Customers
         {
             return await FindByCondition(customer =>
                     customer.Id.Equals(customerId))
+                .Include(customer => customer.User)
                 .SingleOrDefaultAsync();
         }
 

@@ -1,4 +1,5 @@
-﻿using StoreApi.Features.Carts;
+﻿using StoreApi.Features.Authentication;
+using StoreApi.Features.Carts;
 using StoreApi.Features.Categories;
 using StoreApi.Features.Customers;
 using StoreApi.Features.Orders;
@@ -15,10 +16,11 @@ namespace StoreApi.Features
         private readonly IWishlistService _wishlistService;
         private readonly ICategoryService _categoryService;
         private readonly ICustomerService _customerService;
+        private readonly IAuthService _authService;
 
         public ServiceManager(ICartService cartService,
             IOrderService orderService, IProductService productService, IWishlistService wishlistService,
-            ICategoryService categoryService, ICustomerService customerService)
+            ICategoryService categoryService, ICustomerService customerService, IAuthService authService)
         {
             _orderService = orderService;
             _productService = productService;
@@ -26,6 +28,7 @@ namespace StoreApi.Features
             _categoryService = categoryService;
             _customerService = customerService;
             _cartService = cartService;
+            _authService = authService;
         }
 
         public IProductService ProductService => _productService;
@@ -34,5 +37,6 @@ namespace StoreApi.Features
         public ICartService CartService => _cartService;
         public IWishlistService WishlistService => _wishlistService;
         public ICategoryService CategoryService => _categoryService;
+        public IAuthService AuthService => _authService;
     }
 }

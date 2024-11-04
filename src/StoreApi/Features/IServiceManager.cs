@@ -1,4 +1,5 @@
-﻿using StoreApi.Features.Carts;
+﻿using StoreApi.Features.Authentication;
+using StoreApi.Features.Carts;
 using StoreApi.Features.Categories;
 using StoreApi.Features.Customers;
 using StoreApi.Features.Orders;
@@ -15,5 +16,6 @@ namespace StoreApi.Features
         ICartService CartService { get; }
         IWishlistService WishlistService { get; }
         ICategoryService CategoryService { get; }
+        IAuthService AuthService { get; }
     }
 }

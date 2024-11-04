@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StoreApi.Entities;
 
 namespace StoreApi.Features.Customers;
 
@@ -28,13 +27,5 @@ public class CustomersController : ControllerBase
     {
         var customer = await _serviceManager.CustomerService.GetCustomerByIdAsync(id);
         return Ok(customer);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddCustomer([FromBody] Customer customer)
-    {
-        _logger.LogInformation("Adding customer");
-        await _serviceManager.CustomerService.CreateCustomerAsync(customer);
-        return CreatedAtAction(nameof(GetCustomerById), new { id = customer.Id }, customer);
     }
 }
