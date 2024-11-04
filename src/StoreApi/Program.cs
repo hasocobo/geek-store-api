@@ -30,8 +30,9 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.WriteIndented = true;
     });
 builder.Services.ConfigureCors();
-builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -57,6 +58,8 @@ app.UseRouting();
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

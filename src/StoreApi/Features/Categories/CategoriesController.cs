@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using StoreApi.Common.DataTransferObjects.Categories;
 using StoreApi.Entities;
 
@@ -19,15 +20,14 @@ namespace StoreApi.Features.Categories
             _logger = logger;
         }
 
-        // GET: api/categories
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetCategories()
         {
             var categories = await _serviceManager.CategoryService.GetCategoriesAsync();
             return Ok(categories);
         }
-
-        // GET: api/categories/{id}
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryReadDto>> GetCategory(Guid id)
         {

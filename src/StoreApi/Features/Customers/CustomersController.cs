@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace StoreApi.Features.Customers;
 
@@ -16,6 +17,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetCustomers()
     {
         var customers = await _serviceManager.CustomerService.GetCustomersAsync();

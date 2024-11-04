@@ -28,6 +28,19 @@ public class AuthController : ControllerBase
         return CreatedAtAction(nameof(GetUserById), new { id = userToReturn.Id }, userToReturn);
     }
 
+    [HttpPost("authentication/login")]
+    public async Task<ActionResult> Authenticate([FromBody] UserAuthenticationDto userAuthenticationDto)
+    {
+        if (!await _serviceManager.AuthService.ValidateUserAsync(userAuthenticationDto))
+        {
+            return Unauthorized();
+        }
+
+        var jwtToken = _serviceManager.AuthService.CreateTokenAsync();
+        
+        return Ok(jwtToken);
+    }
+
     [HttpGet("users")]
     public async Task<ActionResult<IEnumerable<UserDetails>>> GetUsers()
     {

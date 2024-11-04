@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StoreApi.Common.DataTransferObjects.Authentication;
 using StoreApi.Entities;
 
@@ -7,18 +11,21 @@ namespace StoreApi.Features.Authentication;
 
 public class AuthService : IAuthService
 {
+    private User? _user;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly ILogger<AuthService> _logger;
     private readonly IRepositoryManager _repositoryManager;
+    private readonly IConfiguration _configuration;
 
     public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AuthService> logger,
-        IRepositoryManager repositoryManager)
+        IRepositoryManager repositoryManager, IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
         _repositoryManager = repositoryManager;
+        _configuration = configuration;
     }
 
     public async Task<UserDetails> GetUserByIdAsync(string id)
@@ -49,7 +56,7 @@ public class AuthService : IAuthService
         var usersToReturn =
             users.Select(u => new UserDetails(Id: u.Id, FirstName: u.FirstName, LastName: u.LastName,
                 UserName: u.UserName, DateOfBirth: u.DateOfBirth, Email: u.Email));
-        
+
         return usersToReturn;
     }
 
@@ -101,5 +108,53 @@ public class AuthService : IAuthService
         );
 
         return (result, userDetails);
+    }
+
+    public async Task<bool> ValidateUserAsync(UserAuthenticationDto userAuthenticationDto)
+    {
+        _logger.LogInformation("Validating user credentials");
+        _user = await _userManager.FindByNameAsync(userAuthenticationDto.Username);
+
+        var result = await _userManager.CheckPasswordAsync(_user!, userAuthenticationDto.Password);
+
+        if (!result)
+        {
+            _logger.LogWarning("User credentials are invalid");
+        }
+
+        return result;
+    }
+
+    public async Task<string> CreateTokenAsync()
+    {
+        if (_user == null) throw new UnauthorizedAccessException();
+
+        _logger.LogInformation("Registering claims");
+        var claims = new List<Claim>
+            { new Claim(ClaimTypes.NameIdentifier, _user.Id), new Claim(ClaimTypes.Name, _user.UserName) };
+        var roles = await _userManager.GetRolesAsync(_user);
+        if (roles.Any())
+        {
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        }
+
+        _logger.LogInformation("Creating signing credentials");
+        var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("DOTNETJWTSECRET") ?? throw new
+            InvalidOperationException());
+        var secret = new SymmetricSecurityKey(key);
+        var signingCredentials = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
+
+        _logger.LogInformation("Creating token");
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var jwtToken = new JwtSecurityToken
+        (
+            issuer: jwtSettings["validIssuer"],
+            audience: jwtSettings["validAudience"],
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
+            signingCredentials: signingCredentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(jwtToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using StoreApi.Common.DataTransferObjects.Carts;
 using StoreApi.Entities;
 
@@ -18,7 +19,7 @@ namespace StoreApi.Features.Carts
             _serviceManager = serviceManager;
             _logger = logger;
         }
-
+        
         [HttpGet("carts")]
         public async Task<ActionResult<IEnumerable<CartReadDto>>> GetCarts()
         {
