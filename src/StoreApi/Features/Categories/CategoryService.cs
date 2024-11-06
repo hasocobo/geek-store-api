@@ -1,5 +1,6 @@
 ﻿using StoreApi.Common.DataTransferObjects.Categories;
 using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 
 namespace StoreApi.Features.Categories
 {
@@ -17,16 +18,23 @@ namespace StoreApi.Features.Categories
         public async Task<IEnumerable<CategoryReadDto>> GetCategoriesAsync()
         {
             _logger.LogInformation("Getting all categories");
-            var categories = await _repositoryManager.CategoryRepository.GetAllCategoriesAsync();
+            var categories =
+                await _repositoryManager.CategoryRepository.GetAllCategoriesAsync();
+            
             var categoriesToReturn = categories
                 .Select(c => new CategoryReadDto(Id: c.Id, Name: c.Name));
+            
             return categoriesToReturn;
         }
 
         public async Task<CategoryReadDto> GetCategoryByIdAsync(Guid id)
         {
             _logger.LogInformation($"Getting category with id: {id}");
-            var category = await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+            var category =
+                await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+            if (category is null)
+                throw new NotFoundException("Category", id);
+            
             return new CategoryReadDto(Id: category.Id, Name: category.Name);
         }
 
@@ -43,13 +51,17 @@ namespace StoreApi.Features.Categories
             
             _logger.LogInformation("Category creation successful, returning category data transfer object.");
             var categoryToReturn = new CategoryReadDto(Id: category.Id, Name: category.Name);
+            
             return categoryToReturn;
         }
 
         public async Task UpdateCategoryAsync(Guid id, CategoryUpdateDto categoryUpdateDto)
         {
             _logger.LogInformation($"Fetching category with id: {id} to update");
-            var categoryToUpdate = await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+            var categoryToUpdate =
+                await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+            if (categoryToUpdate is null)
+                throw new NotFoundException("Category", id);
             
             _logger.LogInformation($"Updating category with id: {id}");
             categoryToUpdate.Name = categoryUpdateDto.Name;
@@ -60,8 +72,11 @@ namespace StoreApi.Features.Categories
 
         public async Task DeleteCategoryAsync(Guid id)
         {
-            _logger.LogInformation($"Fetching category with id: {id}");
-            var categoryToDelete = await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+            _logger.LogInformation($"Fetching category with id: {id} to delete");
+            var categoryToDelete =
+                await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
+            if (categoryToDelete is null)
+                throw new NotFoundException("Category", id);
             
             _logger.LogInformation($"Deleting category with id: {id}");
             _repositoryManager.CategoryRepository.DeleteCategory(categoryToDelete);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StoreApi.Common.DataTransferObjects.Orders;
 using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 
 namespace StoreApi.Features.Orders
 {
@@ -18,7 +19,8 @@ namespace StoreApi.Features.Orders
         public async Task<IEnumerable<OrderReadDto>> GetOrdersAsync()
         {
             _logger.LogInformation("Fetching all orders");
-            var orders = await _repositoryManager.OrderRepository.GetOrdersAsync();
+            var orders =
+                await _repositoryManager.OrderRepository.GetOrdersAsync();
 
             _logger.LogInformation($"Returning orders by converting them to read-only data transfer objects");
             var ordersToReturn = orders.Select(o =>
@@ -34,7 +36,8 @@ namespace StoreApi.Features.Orders
                             Id: oi.Id,
                             ProductId: oi.ProductId,
                             ProductName: oi.Product.Name,
-                            UnitPrice: oi.Price, // not oi.Product.Price because then it results in inconsistency in case of a price change.
+                            UnitPrice: oi
+                                .Price, // not oi.Product.Price because then it results in inconsistency in case of a price change.
                             Quantity: oi.Quantity
                         )).ToList()
                 )
@@ -45,11 +48,14 @@ namespace StoreApi.Features.Orders
 
         public async Task<IEnumerable<OrderReadDto>> GetOrdersByCustomerIdAsync(Guid customerId)
         {
-            _logger.LogInformation($"Fetching orders by CustomerId: {customerId}");
+            if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
+                throw new NotFoundException("Customer", customerId);
+
+            _logger.LogInformation($"Fetching orders by CustomerId: {customerId}.");
             var orders =
                 await _repositoryManager.OrderRepository.GetOrdersByCustomerIdAsync(customerId);
-            
-            _logger.LogInformation($"Returning orders by converting them to read-only data transfer objects");
+
+            _logger.LogInformation($"Returning orders.");
             var ordersToReturn = orders.Select(o =>
                 new OrderReadDto
                 (
@@ -63,7 +69,7 @@ namespace StoreApi.Features.Orders
                             Id: oi.Id,
                             ProductId: oi.ProductId,
                             ProductName: oi.Product.Name,
-                            UnitPrice: oi.Price, 
+                            UnitPrice: oi.Price,
                             Quantity: oi.Quantity
                         )).ToList()
                 )
@@ -75,9 +81,12 @@ namespace StoreApi.Features.Orders
         public async Task<OrderReadDto> GetOrderByIdAsync(Guid id)
         {
             _logger.LogInformation($"Fetching order by Id: {id}");
-            var order = await _repositoryManager.OrderRepository.GetOrderByIdAsync(id);
+            var order =
+                await _repositoryManager.OrderRepository.GetOrderByIdAsync(id);
+            if (order is null)
+                throw new NotFoundException("Order", id);
 
-            _logger.LogInformation($"Returning order with Id: {id} by converting it to read dto");
+            _logger.LogInformation($"Returning order with Id: {id}.");
             var orderToReturn = new OrderReadDto
             (
                 Id: order.Id,
@@ -100,6 +109,9 @@ namespace StoreApi.Features.Orders
 
         public async Task<OrderReadDto> CreateOrderForCustomerAsync(Guid customerId, OrderCreateDto orderCreateDto)
         {
+            if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
+                throw new NotFoundException("Customer", customerId);
+            
             if (orderCreateDto.OrderItems != null)
             {
                 // TODO: Create an option for ordering directly without adding to cart
@@ -139,7 +151,7 @@ namespace StoreApi.Features.Orders
             _logger.LogInformation($"Saving order with ID: {orderId} to database.");
             await _repositoryManager.SaveAsync();
 
-            _logger.LogInformation($"Converting order items to read-only data transfer object");
+            _logger.LogInformation($"Converting order items to data transfer objects.");
             var orderItemsToReturn = orderItems.Select(oi =>
                 new OrderItemReadDto
                 (
@@ -151,7 +163,7 @@ namespace StoreApi.Features.Orders
                 )
             ).ToList();
 
-            _logger.LogInformation($"Returning by converting order to read-only data transfer object");
+            _logger.LogInformation($"Returning order.");
             var orderToReturn = new OrderReadDto
             (
                 Id: order.Id,
@@ -166,10 +178,15 @@ namespace StoreApi.Features.Orders
 
         public async Task DeleteOrderAsync(Guid orderId)
         {
-            _logger.LogInformation($"Fetching order by Id: {orderId}");
-            var orderToDelete = await _repositoryManager.OrderRepository.GetOrderByIdAsync(orderId);
+            _logger.LogInformation($"Fetching order by ID: {orderId} to delete");
+            var orderToDelete =
+                await _repositoryManager.OrderRepository.GetOrderByIdAsync(orderId);
+            if (orderToDelete is null)
+                throw new NotFoundException("Order", orderId);
             
+            _logger.LogInformation($"Deleting order with ID: {orderId}.");
             _repositoryManager.OrderRepository.DeleteOrder(orderToDelete);
+            
             await _repositoryManager.SaveAsync();
         }
     }

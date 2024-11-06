@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace StoreApi.Entities
+namespace StoreApi.Entities.Exceptions
 {
     public class ErrorDetails
     {

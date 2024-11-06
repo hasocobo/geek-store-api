@@ -1,5 +1,6 @@
 ﻿using StoreApi.Common.DataTransferObjects.Products;
 using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 
 namespace StoreApi.Features.Products
 {
@@ -17,7 +18,8 @@ namespace StoreApi.Features.Products
         public async Task<IEnumerable<ProductReadDto>> GetProductsAsync()
         {
             _logger.LogInformation("Getting all products");
-            var products = await _repositoryManager.ProductRepository.GetProductsAsync();
+            var products =
+                await _repositoryManager.ProductRepository.GetProductsAsync();
 
             _logger.LogInformation("Returning all products");
             var productsToReturn = products.Select(p => new ProductReadDto
@@ -35,8 +37,11 @@ namespace StoreApi.Features.Products
         public async Task<ProductReadDto> GetProductByIdAsync(Guid productId)
         {
             _logger.LogInformation($"Getting product with id {productId}");
-            var product = await _repositoryManager.ProductRepository.GetProductByIdAsync(productId);
-
+            var product =
+                await _repositoryManager.ProductRepository.GetProductByIdAsync(productId);
+            if (product is null)
+                throw new NotFoundException("Product", productId);
+            
             _logger.LogInformation($"Returning product with id {productId}");
             var productToReturn = new ProductReadDto
             (
@@ -52,6 +57,9 @@ namespace StoreApi.Features.Products
 
         public async Task<IEnumerable<ProductReadDto>> GetProductsByCategoryIdAsync(Guid categoryId)
         {
+            if (!await _repositoryManager.CategoryRepository.CheckIfCategoryExists(categoryId))
+                throw new NotFoundException("Category", categoryId);
+            
             _logger.LogInformation($"Getting all products with category ID: {categoryId}");
             var products = await
                 _repositoryManager.ProductRepository.GetProductsByCategoryIdAsync(categoryId);
@@ -71,20 +79,23 @@ namespace StoreApi.Features.Products
 
         public async Task<ProductReadDto> CreateProductAsync(Guid categoryId, ProductCreateDto productCreateDto)
         {
+            if (!await _repositoryManager.CategoryRepository.CheckIfCategoryExists(categoryId))
+                throw new NotFoundException("Category", categoryId);
+            
             _logger.LogInformation($"Creating new product");
             var product = new Product
             {
                 Id = Guid.NewGuid(),
                 Name = productCreateDto.Name,
                 Price = productCreateDto.Price,
-                Description = productCreateDto.Description
+                Description = productCreateDto.Description,
+                CategoryId = categoryId
             };
 
             _logger.LogInformation($"Saving product with ID: {product.Id} to database");
-            _repositoryManager.ProductRepository.CreateProduct(categoryId, product);
+            _repositoryManager.ProductRepository.CreateProduct(product);
             await _repositoryManager.SaveAsync();
-
-
+            
             _logger.LogInformation($"Fetching category with ID: {categoryId}");
             var category = await
                 _repositoryManager.CategoryRepository.GetCategoryByIdAsync(categoryId);
@@ -107,7 +118,9 @@ namespace StoreApi.Features.Products
             _logger.LogInformation($"Fetching product with ID: {productId} to update.");
             var productToUpdate = await
                 _repositoryManager.ProductRepository.GetProductByIdAsync(productId);
-
+            if (productToUpdate is null)
+                throw new NotFoundException("Product", productId);
+            
             _logger.LogInformation($"Updating product with ID: {productId}");
             if (productUpdateDto.Name != null) productToUpdate.Name = productUpdateDto.Name;
             if (productUpdateDto.Price.HasValue) productToUpdate.Price = productUpdateDto.Price.Value;
@@ -123,10 +136,14 @@ namespace StoreApi.Features.Products
         public async Task DeleteProductAsync(Guid productId)
         {
             _logger.LogInformation($"Fetching product with ID: {productId} to delete");
-            var productToDelete = await _repositoryManager.ProductRepository.GetProductByIdAsync(productId);
-
+            var productToDelete = 
+                await _repositoryManager.ProductRepository.GetProductByIdAsync(productId);
+            if (productToDelete is null)
+                throw new NotFoundException("Product", productId);
+            
             _logger.LogInformation($"Deleting product with ID: {productId}");
             _repositoryManager.ProductRepository.DeleteProduct(productToDelete);
+            
             await _repositoryManager.SaveAsync();
         }
     }

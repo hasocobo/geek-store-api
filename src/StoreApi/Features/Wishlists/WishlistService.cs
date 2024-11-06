@@ -1,5 +1,6 @@
 ﻿using StoreApi.Common.DataTransferObjects.Wishlists;
 using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 
 namespace StoreApi.Features.Wishlists
 {
@@ -17,7 +18,8 @@ namespace StoreApi.Features.Wishlists
         public async Task<IEnumerable<WishlistReadDto>> GetWishlistsAsync()
         {
             _logger.LogInformation("Getting all wishlist items");
-            var wishlistItems = await _repositoryManager.WishlistRepository.GetWishlistsAsync();
+            var wishlistItems =
+                await _repositoryManager.WishlistRepository.GetWishlistsAsync();
 
             _logger.LogInformation("Converting all wishlist items to read-only wishlist data transfer objects.");
             var wishlistItemsToReturn = wishlistItems.Select
@@ -37,8 +39,11 @@ namespace StoreApi.Features.Wishlists
         public async Task<WishlistReadDto> GetWishlistItemByIdAsync(Guid id)
         {
             _logger.LogInformation($"Getting wishlist with id: {id}");
-            var wishlistItem = await _repositoryManager.WishlistRepository.GetWishlistByIdAsync(id);
-
+            var wishlistItem =
+                await _repositoryManager.WishlistRepository.GetWishlistByIdAsync(id);
+            if (wishlistItem is null)
+                throw new NotFoundException("Wishlist item", id);
+            
             _logger.LogInformation($"Converting wishlist item to read-only wishlist object.");
             var wishlistItemToReturn = new WishlistReadDto
             (
@@ -53,11 +58,14 @@ namespace StoreApi.Features.Wishlists
 
         public async Task<IEnumerable<WishlistReadDto>> GetWishlistByCustomerIdAsync(Guid customerId)
         {
+            if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
+                throw new NotFoundException("Customer", customerId);
+            
             _logger.LogInformation($"Getting wishlist items by customer: {customerId}");
             var wishlist = await
                 _repositoryManager.WishlistRepository.GetWishlistByCustomerIdAsync(customerId);
 
-            _logger.LogInformation($"Returning wishlist by converting it to read-only.");
+            _logger.LogInformation($"Returning wishlist for customer with ID: {customerId}");
             var wishlistToReturn = wishlist.Select(wi =>
                 new WishlistReadDto
                 (
@@ -74,6 +82,12 @@ namespace StoreApi.Features.Wishlists
         public async Task<WishlistReadDto> CreateWishlistItemForCustomerAsync(Guid customerId,
             WishlistCreateDto wishlistCreateDto)
         {
+            if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
+                throw new NotFoundException("Customer", customerId);
+            
+            if (!await _repositoryManager.ProductRepository.CheckIfProductExists(wishlistCreateDto.ProductId))
+                throw new NotFoundException("Product", wishlistCreateDto.ProductId);
+            
             _logger.LogInformation($"Creating wishlist for customer: {customerId}");
             var wishlistItem = new Wishlist
             {
@@ -83,13 +97,12 @@ namespace StoreApi.Features.Wishlists
             };
             _repositoryManager.WishlistRepository.CreateWishlist(wishlistItem);
             await _repositoryManager.SaveAsync();
+            
+            _logger.LogInformation($"Fetching product with ID: {wishlistCreateDto.ProductId}");
+            var product =
+                await _repositoryManager.ProductRepository.GetProductByIdAsync(wishlistCreateDto.ProductId);
 
-            _logger.LogInformation($"Wishlist for customer: {customerId} successfully created");
-
-            _logger.LogInformation($"Fetching product with id: {wishlistCreateDto.ProductId}");
-            var product = await _repositoryManager.ProductRepository.GetProductByIdAsync(wishlistCreateDto.ProductId);
-
-            _logger.LogInformation($"Converting wishlist item to read-only wishlist item.");
+            _logger.LogInformation($"Returning wishlist item with ID: {wishlistItem.Id}.");
             var wishlistItemToReturn = new WishlistReadDto
             (
                 Id: wishlistItem.Id,
@@ -103,10 +116,13 @@ namespace StoreApi.Features.Wishlists
 
         public async Task DeleteWishlistItemAsync(Guid id)
         {
-            _logger.LogInformation($"Fetching wishlist with id: {id} to delete");
-            var wishlistToDelete = await _repositoryManager.WishlistRepository.GetWishlistByIdAsync(id);
-
-            _logger.LogInformation($"Deleting wishlist with id: {id}");
+            _logger.LogInformation($"Fetching wishlist with ID: {id} to delete");
+            var wishlistToDelete = 
+                await _repositoryManager.WishlistRepository.GetWishlistByIdAsync(id);
+            if (wishlistToDelete is null)
+                throw new NotFoundException("Wishlist item", id);
+            
+            _logger.LogInformation($"Deleting wishlist with ID: {id}");
             _repositoryManager.WishlistRepository.DeleteWishlist(wishlistToDelete);
 
             await _repositoryManager.SaveAsync();

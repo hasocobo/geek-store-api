@@ -26,13 +26,12 @@ namespace StoreApi.Features.Orders
                 .ToListAsync();
         }
 
-        public async Task<Order> GetOrderByIdAsync(Guid orderId)
+        public async Task<Order?> GetOrderByIdAsync(Guid orderId)
         {
             return await FindByCondition(order => order.Id.Equals(orderId))
-                       .Include(o => o.OrderItems)
-                       .ThenInclude(oi => oi.Product)
-                       .SingleOrDefaultAsync()
-                   ?? throw new InvalidOperationException();
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .SingleOrDefaultAsync();
         }
 
         public void CreateOrder(Order order)

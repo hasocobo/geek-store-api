@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 using StoreApi.Infrastructure;
 
 namespace StoreApi.Features.Categories
@@ -10,18 +11,21 @@ namespace StoreApi.Features.Categories
         {
         }
 
+        public async Task<bool> CheckIfCategoryExists(Guid categoryId)
+        {
+            return await Exists(c => c.Id.Equals(categoryId));
+        }
 
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
             return await FindAll().ToListAsync();
         }
 
-        public async Task<Category> GetCategoryByIdAsync(Guid categoryId)
+        public async Task<Category?> GetCategoryByIdAsync(Guid categoryId)
         {
-            var category = await FindByCondition(category =>
+            return await FindByCondition(category =>
                     category.Id.Equals(categoryId))
                 .SingleOrDefaultAsync();
-            return category ?? throw new InvalidOperationException();
         }
 
         public void CreateCategory(Category category)
@@ -33,6 +37,7 @@ namespace StoreApi.Features.Categories
         {
             Update(category);
         }
+
         public void DeleteCategory(Category category)
         {
             Delete(category);

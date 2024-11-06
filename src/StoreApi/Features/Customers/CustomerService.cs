@@ -1,4 +1,5 @@
 ﻿using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 
 namespace StoreApi.Features.Customers
 {
@@ -21,8 +22,9 @@ namespace StoreApi.Features.Customers
         public async Task<Customer> GetCustomerByIdAsync(Guid id)
         {
             return await _repositoryManager.CustomerRepository.GetCustomerByIdAsync(id) ??
-                   throw new InvalidOperationException();
+                   throw new NotFoundException("Customer", id);
         }
+
         public async Task CreateCustomerAsync(Customer customer)
         {
             _repositoryManager.CustomerRepository.CreateCustomer(customer);

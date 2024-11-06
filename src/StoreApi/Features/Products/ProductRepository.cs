@@ -11,6 +11,11 @@ namespace StoreApi.Features.Products
         {
         }
 
+        public async Task<bool> CheckIfProductExists(Guid id)
+        {
+            return await Exists(p => p.Id.Equals(id));
+        }
+
         public async Task<IEnumerable<Product>> GetProductsAsync()
         {
             return await FindAll()
@@ -25,17 +30,15 @@ namespace StoreApi.Features.Products
                 .ToListAsync();
         }
 
-        public async Task<Product> GetProductByIdAsync(Guid productId)
+        public async Task<Product?> GetProductByIdAsync(Guid productId)
         {
             return await FindByCondition(p => p.Id.Equals(productId))
                 .Include(p => p.Category)
-                .SingleOrDefaultAsync() ?? throw new
-                InvalidOperationException();
+                .SingleOrDefaultAsync();
         }
 
-        public void CreateProduct(Guid categoryId, Product product)
+        public void CreateProduct(Product product)
         {
-            product.CategoryId = categoryId;
             Create(product);
         }
 

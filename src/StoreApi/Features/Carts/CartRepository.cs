@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 using StoreApi.Infrastructure;
 
 namespace StoreApi.Features.Carts
@@ -16,11 +17,11 @@ namespace StoreApi.Features.Carts
             return await FindAll().Include(ci => ci.Product).ToListAsync();
         }
 
-        public async Task<Cart> GetCartByIdAsync(Guid cartId)
+        public async Task<Cart?> GetCartByIdAsync(Guid cartId)
         {
             return await FindByCondition(cart => cart.Id.Equals(cartId))
                 .Include(ci => ci.Product)
-                .SingleOrDefaultAsync() ?? throw new InvalidOperationException();
+                .SingleOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Cart>> GetCartsByCustomerIdAsync(Guid customerId)

@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace StoreApi.Entities
+﻿namespace StoreApi.Entities
 {
     public class Cart
     {
@@ -15,4 +12,5 @@ namespace StoreApi.Entities
         public Guid ProductId { get; set; }
         public Product? Product { get; set; }
     }
+    
 }

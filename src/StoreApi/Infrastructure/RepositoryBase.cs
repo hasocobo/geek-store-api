@@ -36,5 +36,10 @@ namespace StoreApi.Infrastructure
             return _storeContext.Set<T>().Where(expression);
         }
 
+        public async Task<bool> Exists(Expression<Func<T, bool>> expression)
+        {
+            return await _storeContext.Set<T>().AnyAsync(expression);
+        }
+
     }
 }

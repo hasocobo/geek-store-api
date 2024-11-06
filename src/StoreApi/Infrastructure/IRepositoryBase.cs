@@ -19,5 +19,7 @@ namespace StoreApi.Infrastructure
         public void Create(T entity);
         public void Update(T entity);
         public void Delete(T entity);
+        
+        public Task<bool> Exists(Expression<Func<T, bool>> expression);
     }
 }

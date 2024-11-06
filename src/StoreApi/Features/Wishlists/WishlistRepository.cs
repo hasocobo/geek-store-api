@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StoreApi.Entities;
+using StoreApi.Entities.Exceptions;
 using StoreApi.Infrastructure;
 
 namespace StoreApi.Features.Wishlists
@@ -17,13 +18,12 @@ namespace StoreApi.Features.Wishlists
                 .ToListAsync();
         }
 
-        public async Task<Wishlist> GetWishlistByIdAsync(Guid id)
+        public async Task<Wishlist?> GetWishlistByIdAsync(Guid id)
         {
             return await FindByCondition(wishlist =>
-                           wishlist.Id.Equals(id))
-                       .Include(wi => wi.Product)
-                       .SingleOrDefaultAsync() ??
-                   throw new InvalidOperationException();
+                    wishlist.Id.Equals(id))
+                .Include(wi => wi.Product)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Wishlist>> GetWishlistByCustomerIdAsync(Guid customerId)
