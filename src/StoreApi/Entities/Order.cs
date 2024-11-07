@@ -1,9 +1,12 @@
-﻿namespace StoreApi.Entities
+﻿using StoreApi.Common.ValidationAttributes;
+
+namespace StoreApi.Entities
 {
     public class Order
     {
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
+        [NotEmptyGuid]
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
 

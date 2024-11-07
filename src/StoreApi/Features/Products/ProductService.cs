@@ -126,7 +126,7 @@ namespace StoreApi.Features.Products
             if (productUpdateDto.Price.HasValue) productToUpdate.Price = productUpdateDto.Price.Value;
             if (productUpdateDto.Description != null) productToUpdate.Description = productUpdateDto.Description;
             if (productUpdateDto.Sku != null) productToUpdate.Sku = productUpdateDto.Sku;
-            if (productUpdateDto.CategoryId != null) productToUpdate.CategoryId = productUpdateDto.CategoryId.Value;
+            productToUpdate.CategoryId = productUpdateDto.CategoryId;
             
             _repositoryManager.ProductRepository.UpdateProduct(productToUpdate);
             

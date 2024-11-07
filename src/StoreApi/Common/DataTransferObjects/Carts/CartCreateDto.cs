@@ -1,3 +1,5 @@
-﻿namespace StoreApi.Common.DataTransferObjects.Carts;
+﻿using StoreApi.Common.ValidationAttributes;
 
-public record CartCreateDto(Guid ProductId, int Quantity);
+namespace StoreApi.Common.DataTransferObjects.Carts;
+
+public record CartCreateDto([NotEmptyGuid] Guid ProductId, int Quantity);

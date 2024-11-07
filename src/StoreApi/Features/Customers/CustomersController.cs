@@ -17,7 +17,6 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetCustomers()
     {
         var customers = await _serviceManager.CustomerService.GetCustomersAsync();
