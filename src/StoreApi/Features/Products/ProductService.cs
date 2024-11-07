@@ -1,4 +1,5 @@
 ﻿using StoreApi.Common.DataTransferObjects.Products;
+using StoreApi.Common.QueryParameters;
 using StoreApi.Entities;
 using StoreApi.Entities.Exceptions;
 
@@ -15,13 +16,13 @@ namespace StoreApi.Features.Products
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ProductReadDto>> GetProductsAsync()
+        public async Task<IEnumerable<ProductReadDto>> GetProductsAsync(QueryParameters queryParameters)
         {
-            _logger.LogInformation("Getting all products");
+            _logger.LogInformation("Getting products specified with the query parameters");
             var products =
-                await _repositoryManager.ProductRepository.GetProductsAsync();
+                await _repositoryManager.ProductRepository.GetProductsAsync(queryParameters);
 
-            _logger.LogInformation("Returning all products");
+            _logger.LogInformation("Returning products");
             var productsToReturn = products.Select(p => new ProductReadDto
             (
                 p.Id,

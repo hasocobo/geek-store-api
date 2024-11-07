@@ -21,7 +21,6 @@ namespace StoreApi.Features.Categories
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetCategories()
         {
             var categories = await _serviceManager.CategoryService.GetCategoriesAsync();

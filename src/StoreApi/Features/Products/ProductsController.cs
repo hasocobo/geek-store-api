@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using StoreApi.Common.DataTransferObjects.Products;
+using StoreApi.Common.QueryParameters;
 using StoreApi.Entities;
 
 namespace StoreApi.Features.Products;
@@ -19,10 +20,11 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("products")]
-    public async Task<ActionResult<IEnumerable<ProductReadDto>>> GetProducts()
+    public async Task<ActionResult<IEnumerable<ProductReadDto>>> GetProducts(
+        [FromQuery] QueryParameters queryParameters)
     {
         var productsToReturn = await
-            _serviceManager.ProductService.GetProductsAsync();
+            _serviceManager.ProductService.GetProductsAsync(queryParameters);
         return Ok(productsToReturn);
     }
 

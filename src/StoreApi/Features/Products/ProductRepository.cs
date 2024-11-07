@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using StoreApi.Common.QueryParameters;
 using StoreApi.Entities;
 using StoreApi.Infrastructure;
 
@@ -16,9 +17,11 @@ namespace StoreApi.Features.Products
             return await Exists(p => p.Id.Equals(id));
         }
 
-        public async Task<IEnumerable<Product>> GetProductsAsync()
+        public async Task<IEnumerable<Product>> GetProductsAsync(QueryParameters queryParameters)
         {
             return await FindAll()
+                .Skip(queryParameters.PageSize * (queryParameters.PageNumber - 1))
+                .Take(queryParameters.PageSize)
                 .Include(p => p.Category)
                 .ToListAsync();
         }
