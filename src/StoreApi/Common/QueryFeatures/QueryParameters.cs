@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StoreApi.Common.QueryParameters;
+namespace StoreApi.Common.QueryFeatures;
 
 public class QueryParameters
 {

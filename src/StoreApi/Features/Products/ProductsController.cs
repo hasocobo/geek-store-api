@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using StoreApi.Common.DataTransferObjects.Products;
-using StoreApi.Common.QueryParameters;
-using StoreApi.Entities;
+using StoreApi.Common.QueryFeatures;
 
 namespace StoreApi.Features.Products;
 
@@ -23,8 +23,11 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<IEnumerable<ProductReadDto>>> GetProducts(
         [FromQuery] QueryParameters queryParameters)
     {
-        var productsToReturn = await
+        var (productsToReturn, metadata) = await
             _serviceManager.ProductService.GetProductsAsync(queryParameters);
+        
+        Response.Headers["StoreApi-Pagination"] = JsonSerializer.Serialize(metadata);
+        
         return Ok(productsToReturn);
     }
 
