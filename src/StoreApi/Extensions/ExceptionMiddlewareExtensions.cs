@@ -23,7 +23,7 @@ namespace StoreApi.Extensions
 
                     if (contextFeature != null)
                     {
-                        logger.LogError("Something went wrong {message}", contextFeature.Error);
+                        logger.LogError($"Something went wrong {contextFeature.Error}");
 
                         await context.Response.WriteAsync(
                             new ErrorDetails()

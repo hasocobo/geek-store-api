@@ -7,7 +7,10 @@ namespace StoreApi.Features.Products
     public interface IProductService
     {
         Task<(IEnumerable<ProductReadDto>, Metadata)> GetProductsAsync(QueryParameters queryParameters);
-        Task<IEnumerable<ProductReadDto>> GetProductsByCategoryIdAsync(Guid categoryId);
+
+        Task<(IEnumerable<ProductReadDto>, Metadata)> GetProductsByCategoryIdAsync(Guid categoryId,
+            QueryParameters queryParameters);
+
         Task<ProductReadDto> GetProductByIdAsync(Guid productId);
         Task<ProductReadDto> CreateProductAsync(Guid categoryId, ProductCreateDto productCreateDto);
         Task UpdateProductAsync(Guid id, ProductUpdateDto productUpdateDto);

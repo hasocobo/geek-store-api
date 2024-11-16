@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using StoreApi.Common.QueryFeatures;
 using StoreApi.Entities;
 using StoreApi.Infrastructure;
@@ -18,14 +19,38 @@ namespace StoreApi.Features.Products
 
         public async Task<(IEnumerable<Product>, Metadata)> GetProductsAsync(QueryParameters queryParameters)
         {
-            var products = await FindAll()
+            var query = FindAll()
+                .Include(p => p.Category)
+                .AsNoTracking(); // no need for tracking because it's meant to be read-only
+
+            if (!string.IsNullOrWhiteSpace(queryParameters.SearchTerm))
+            {
+                var keywords = queryParameters.SearchTerm
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(k =>
+                    {
+                        k = k.Trim();
+                        k = k.ToLower();
+                        return k;
+                    })
+                    .ToArray();
+
+                // search query for each keyword. 
+                query = query.Where(p =>
+                    keywords.Any(keyword =>
+                        p.Name.ToLower().Contains(keyword) ||
+                        (p.Description != null &&
+                         p.Description.ToLower().Contains(keyword))
+                    ));
+            }
+
+            var totalRecordSize = await query.CountAsync();
+
+            var products = await query
                 .Skip(queryParameters.PageSize * (queryParameters.PageNumber - 1))
                 .Take(queryParameters.PageSize)
-                .Include(p => p.Category)
                 .ToListAsync();
 
-            var totalRecordSize = await FindAll().CountAsync();
-            
             var metadata = new Metadata
             {
                 CurrentPage = queryParameters.PageNumber,
@@ -33,15 +58,55 @@ namespace StoreApi.Features.Products
                 PageSize = queryParameters.PageSize,
                 TotalRecords = totalRecordSize
             };
-            
+
             return (products, metadata);
         }
 
-        public async Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(Guid categoryId)
+
+        public async Task<(IEnumerable<Product>, Metadata)> GetProductsByCategoryIdAsync(Guid categoryId,
+            QueryParameters queryParameters)
         {
-            return await FindByCondition(p => p.CategoryId.Equals(categoryId))
+            var query = FindByCondition(p => p.CategoryId.Equals(categoryId))
                 .Include(p => p.Category)
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(queryParameters.SearchTerm))
+            {
+                var keywords = queryParameters.SearchTerm
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(k =>
+                    {
+                        k = k.Trim();
+                        k = k.ToLower();
+                        return k;
+                    })
+                    .ToArray();
+
+                // search query for each keyword. 
+                query = query.Where(p =>
+                    keywords.Any(keyword =>
+                        p.Name.ToLower().Contains(keyword) ||
+                        (p.Description != null &&
+                         p.Description.ToLower().Contains(keyword))
+                    ));
+            }
+
+            var totalRecordSize = await query.CountAsync();
+
+            var products = await query
+                .Skip(queryParameters.PageSize * (queryParameters.PageNumber - 1))
+                .Take(queryParameters.PageSize)
                 .ToListAsync();
+
+            var metadata = new Metadata
+            {
+                CurrentPage = queryParameters.PageNumber,
+                TotalPages = (int)Math.Ceiling(totalRecordSize / (double)queryParameters.PageSize),
+                PageSize = queryParameters.PageSize,
+                TotalRecords = totalRecordSize
+            };
+
+            return (products, metadata);
         }
 
         public async Task<Product?> GetProductByIdAsync(Guid productId)

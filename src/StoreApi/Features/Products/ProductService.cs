@@ -56,16 +56,17 @@ namespace StoreApi.Features.Products
             return productToReturn;
         }
 
-        public async Task<IEnumerable<ProductReadDto>> GetProductsByCategoryIdAsync(Guid categoryId)
+        public async Task<(IEnumerable<ProductReadDto>, Metadata)> GetProductsByCategoryIdAsync(Guid categoryId,
+            QueryParameters queryParameters)
         {
             if (!await _repositoryManager.CategoryRepository.CheckIfCategoryExists(categoryId))
                 throw new NotFoundException("Category", categoryId);
 
-            _logger.LogInformation($"Getting all products with category ID: {categoryId}");
-            var products = await
-                _repositoryManager.ProductRepository.GetProductsByCategoryIdAsync(categoryId);
+            _logger.LogInformation($"Getting products with category ID: {categoryId}");
+            var (products, metadata) = await
+                _repositoryManager.ProductRepository.GetProductsByCategoryIdAsync(categoryId, queryParameters);
 
-            _logger.LogInformation($"Returning all products with category ID: {categoryId}");
+            _logger.LogInformation($"Returning products with category ID: {categoryId}");
             var productsToReturn = products.Select(p => new ProductReadDto
             (
                 p.Id,
@@ -75,7 +76,7 @@ namespace StoreApi.Features.Products
                 p.Category?.Name ?? string.Empty
             ));
 
-            return productsToReturn;
+            return (productsToReturn, metadata);
         }
 
         public async Task<ProductReadDto> CreateProductAsync(Guid categoryId, ProductCreateDto productCreateDto)

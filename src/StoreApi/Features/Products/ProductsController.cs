@@ -25,28 +25,31 @@ public class ProductsController : ControllerBase
     {
         var (productsToReturn, metadata) = await
             _serviceManager.ProductService.GetProductsAsync(queryParameters);
-        
+
         Response.Headers["StoreApi-Pagination"] = JsonSerializer.Serialize(metadata);
-        
+
         return Ok(productsToReturn);
     }
 
-    [HttpGet("products/{id}")]
+    [HttpGet("products/{id:guid}")]
     public async Task<ActionResult<ProductReadDto>> GetProductById(Guid id)
     {
         var product = await _serviceManager.ProductService.GetProductByIdAsync(id);
         return Ok(product);
     }
 
-    [HttpGet("categories/{categoryId}/products")]
-    public async Task<ActionResult<IEnumerable<ProductReadDto>>> GetProductsByCategoryId(Guid categoryId)
+    [HttpGet("categories/{categoryId:guid}/products")]
+    public async Task<ActionResult<IEnumerable<ProductReadDto>>> GetProductsByCategoryId(Guid categoryId,
+        [FromQuery] QueryParameters queryParameters)
     {
-        var productsToReturn = await
-            _serviceManager.ProductService.GetProductsByCategoryIdAsync(categoryId);
+        var (productsToReturn, metadata) = await
+            _serviceManager.ProductService.GetProductsByCategoryIdAsync(categoryId, queryParameters);
+        
+        Response.Headers["StoreApi-Pagination"] = JsonSerializer.Serialize(metadata);
         return Ok(productsToReturn);
     }
 
-    [HttpPost("categories/{categoryId}/products")]
+    [HttpPost("categories/{categoryId:guid}/products")]
     public async Task<ActionResult<ProductReadDto>> CreateProduct(Guid categoryId,
         [FromBody] ProductCreateDto productCreateDto)
     {
@@ -56,15 +59,15 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
     }
 
-    [HttpPut("products/{id}")]
+    [HttpPut("products/{id:guid}")]
     public async Task<ActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto productUpdateDto)
     {
         await _serviceManager.ProductService.UpdateProductAsync(id, productUpdateDto);
         return Ok();
     }
 
-    [HttpDelete("products/{id}")]
-    public async Task<IActionResult> DeleteProduct(Guid id)
+    [HttpDelete("products/{id:guid}")]
+    public async Task<ActionResult> DeleteProduct(Guid id)
     {
         await _serviceManager.ProductService.DeleteProductAsync(id);
         return NoContent();

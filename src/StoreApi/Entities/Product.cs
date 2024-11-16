@@ -16,7 +16,7 @@ namespace StoreApi.Entities
         public string? Sku { get; set; }
 
         [StringLength(100)]
-        public string? Description { get; set; }
+        public string? Description { get; set; } = string.Empty;
 
         [Range(0, int.MaxValue, ErrorMessage = "Price must be greater than zero.")]
         public decimal Price { get; set; }
