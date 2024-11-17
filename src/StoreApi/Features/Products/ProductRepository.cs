@@ -27,12 +27,7 @@ namespace StoreApi.Features.Products
             {
                 var keywords = queryParameters.SearchTerm
                     .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                    .Select(k =>
-                    {
-                        k = k.Trim();
-                        k = k.ToLower();
-                        return k;
-                    })
+                    .Select(k => k.Trim().ToLower())
                     .ToArray();
 
                 // search query for each keyword. 
@@ -42,6 +37,22 @@ namespace StoreApi.Features.Products
                         (p.Description != null &&
                          p.Description.ToLower().Contains(keyword))
                     ));
+            }
+
+            if (!string.IsNullOrWhiteSpace(queryParameters.SortBy))
+            {
+                query = queryParameters.SortBy.ToLower() switch
+                {
+                    "name" => queryParameters.SortDescending
+                        ? query.OrderByDescending(p => p.Name)
+                        : query.OrderBy(p => p.Name),
+
+                    "price" => queryParameters.SortDescending
+                        ? query.OrderByDescending(p => p.Price)
+                        : query.OrderBy(p => p.Price),
+
+                    _ => throw new BadHttpRequestException($"Unsupported sort field: {queryParameters.SortBy}")
+                };
             }
 
             var totalRecordSize = await query.CountAsync();
@@ -74,12 +85,7 @@ namespace StoreApi.Features.Products
             {
                 var keywords = queryParameters.SearchTerm
                     .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                    .Select(k =>
-                    {
-                        k = k.Trim();
-                        k = k.ToLower();
-                        return k;
-                    })
+                    .Select(k => k.Trim().ToLower())
                     .ToArray();
 
                 // search query for each keyword. 
@@ -89,6 +95,22 @@ namespace StoreApi.Features.Products
                         (p.Description != null &&
                          p.Description.ToLower().Contains(keyword))
                     ));
+            }
+
+            if (!string.IsNullOrWhiteSpace(queryParameters.SortBy))
+            {
+                query = queryParameters.SortBy.ToLower() switch
+                {
+                    "name" => queryParameters.SortDescending
+                        ? query.OrderByDescending(p => p.Name)
+                        : query.OrderBy(p => p.Name),
+
+                    "price" => queryParameters.SortDescending
+                        ? query.OrderByDescending(p => p.Price)
+                        : query.OrderBy(p => p.Price),
+
+                    _ => throw new BadHttpRequestException($"Unsupported sort field: {queryParameters.SortBy}")
+                };
             }
 
             var totalRecordSize = await query.CountAsync();
