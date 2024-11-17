@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using StoreApi.Common.DataTransferObjects.Orders;
+﻿using StoreApi.Common.DataTransferObjects.Orders;
 using StoreApi.Entities;
 using StoreApi.Entities.Exceptions;
 
@@ -111,72 +110,91 @@ namespace StoreApi.Features.Orders
         {
             if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
                 throw new NotFoundException("Customer", customerId);
-            
+
             if (orderCreateDto.OrderItems != null)
             {
                 // TODO: Create an option for ordering directly without adding to cart
             }
-            
+
             _logger.LogInformation($"Fetching customer with ID: {customerId}'s cart items.");
             var cartItems = (await
                 _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId)).ToList();
-            
+
             if (cartItems.Count == 0)
                 throw new NotFoundException("CartItems for customer", customerId);
 
-            _logger.LogInformation($"Creating order items from each cart item.");
-            var orderId = Guid.NewGuid();
-            var orderItems = cartItems
-                .Select(ci =>
-                    new OrderItem
-                    {
-                        Id = Guid.NewGuid(),
-                        Quantity = ci.Quantity,
-                        ProductId = ci.ProductId,
-                        Product = ci.Product,
-                        OrderId = orderId,
-                        Price = ci.Product!.Price
-                    })
-                .ToList();
-
-            _logger.LogInformation($"Creating order with ID: {orderId}.");
-            var order = new Order
+            _logger.LogInformation($"Beginning transaction.");
+            await using var transaction = await _repositoryManager.BeginTransactionAsync();
+            try
             {
-                Id = orderId,
-                Date = DateTime.Now,
-                CustomerId = customerId,
-                OrderItems = orderItems,
-                // ShipmentId = orderCreateDto.ShipmentId
-                // PaymentId = orderCreateDto.PaymentId
-            };
-            _repositoryManager.OrderRepository.CreateOrder(order);
+                _logger.LogInformation($"Creating order items from each cart item.");
+                var orderId = Guid.NewGuid();
+                var orderItems = cartItems
+                    .Select(ci =>
+                        new OrderItem
+                        {
+                            Id = Guid.NewGuid(),
+                            Quantity = ci.Quantity,
+                            ProductId = ci.ProductId,
+                            Product = ci.Product,
+                            OrderId = orderId,
+                            Price = ci.Product!.Price
+                        })
+                    .ToList();
 
-            _logger.LogInformation($"Saving order with ID: {orderId} to database.");
-            await _repositoryManager.SaveAsync();
+                _logger.LogInformation($"Creating order with ID: {orderId}.");
+                var order = new Order
+                {
+                    Id = orderId,
+                    Date = DateTime.Now,
+                    CustomerId = customerId,
+                    OrderItems = orderItems,
+                    // ShipmentId = orderCreateDto.ShipmentId
+                    // PaymentId = orderCreateDto.PaymentId
+                };
+                _repositoryManager.OrderRepository.CreateOrder(order);
 
-            _logger.LogInformation($"Converting order items to data transfer objects.");
-            var orderItemsToReturn = orderItems.Select(oi =>
-                new OrderItemReadDto
+                _logger.LogInformation($"Deleting cart items for customer: {customerId}.");
+                foreach (var cartItem in cartItems)
+                {
+                    _repositoryManager.CartRepository.DeleteCart(cartItem);
+                }
+
+                _logger.LogInformation($"Saving changes and committing transaction.");
+                await _repositoryManager.SaveAsync();
+                await transaction.CommitAsync();
+
+                _logger.LogInformation($"Converting order items to data transfer objects.");
+                var orderItemsToReturn = orderItems.Select(oi =>
+                    new OrderItemReadDto
+                    (
+                        Id: oi.Id,
+                        ProductId: oi.ProductId,
+                        ProductName: oi.Product!.Name,
+                        UnitPrice: oi.Price,
+                        Quantity: oi.Quantity
+                    )
+                ).ToList();
+
+                _logger.LogInformation($"Returning order.");
+                var orderToReturn = new OrderReadDto
                 (
-                    Id: oi.Id,
-                    ProductId: oi.ProductId,
-                    ProductName: oi.Product!.Name,
-                    UnitPrice: oi.Price,
-                    Quantity: oi.Quantity
-                )
-            ).ToList();
+                    Id: order.Id,
+                    Date: order.Date,
+                    TotalPrice: order.TotalPrice(),
+                    CustomerId: order.CustomerId,
+                    OrderItems: orderItemsToReturn
+                );
 
-            _logger.LogInformation($"Returning order.");
-            var orderToReturn = new OrderReadDto
-            (
-                Id: order.Id,
-                Date: order.Date,
-                TotalPrice: order.TotalPrice(),
-                CustomerId: order.CustomerId,
-                OrderItems: orderItemsToReturn
-            );
+                return orderToReturn;
+            }
 
-            return orderToReturn;
+            catch (Exception e)
+            {
+                _logger.LogError($"An error occured while saving order data: {e.Message}, rolling back transaction.");
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task DeleteOrderAsync(Guid orderId)
@@ -186,10 +204,10 @@ namespace StoreApi.Features.Orders
                 await _repositoryManager.OrderRepository.GetOrderByIdAsync(orderId);
             if (orderToDelete is null)
                 throw new NotFoundException("Order", orderId);
-            
+
             _logger.LogInformation($"Deleting order with ID: {orderId}.");
             _repositoryManager.OrderRepository.DeleteOrder(orderToDelete);
-            
+
             await _repositoryManager.SaveAsync();
         }
     }
