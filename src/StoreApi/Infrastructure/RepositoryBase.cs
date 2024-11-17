@@ -5,7 +5,7 @@ namespace StoreApi.Infrastructure
 {
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        protected readonly StoreContext _storeContext;
+        private readonly StoreContext _storeContext;
 
         protected RepositoryBase(StoreContext storeContext)
         {

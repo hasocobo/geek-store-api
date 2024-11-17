@@ -13,5 +13,6 @@ namespace StoreApi.Features.Carts
         
         Task UpdateCartAsync(Guid customerId, Guid id, CartUpdateDto cartUpdateDto);
         Task DeleteCartAsync(Guid cartId);
+        Task DeleteCartsForCustomerAsync(Guid customerId);
     }
 }

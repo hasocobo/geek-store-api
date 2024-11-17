@@ -39,6 +39,19 @@ namespace StoreApi.Features.Products
                     ));
             }
 
+            if (queryParameters.Filters.Count > 0)
+            {
+                foreach (var filter in queryParameters.Filters)
+                {
+                    query = filter.Key.ToLower() switch
+                    {
+                        "pricemin" => query.Where(p => p.Price > int.Parse(filter.Value)),
+                        "pricemax" => query.Where(p => p.Price < int.Parse(filter.Value)),
+                        _ => query
+                    };
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(queryParameters.SortBy))
             {
                 query = queryParameters.SortBy.ToLower() switch
@@ -80,7 +93,8 @@ namespace StoreApi.Features.Products
             var query = FindByCondition(p => p.CategoryId.Equals(categoryId))
                 .Include(p => p.Category)
                 .AsNoTracking();
-
+            
+            // apply searching
             if (!string.IsNullOrWhiteSpace(queryParameters.SearchTerm))
             {
                 var keywords = queryParameters.SearchTerm
@@ -97,6 +111,21 @@ namespace StoreApi.Features.Products
                     ));
             }
 
+            // apply filtering 
+            if (queryParameters.Filters.Count > 0)
+            {
+                foreach (var filter in queryParameters.Filters)
+                {
+                    query = filter.Key.ToLower() switch
+                    {
+                        "pricemin" => query.Where(p => p.Price > int.Parse(filter.Value)),
+                        "pricemax" => query.Where(p => p.Price < int.Parse(filter.Value)),
+                        _ => query
+                    };
+                }
+            }
+
+            // apply sorting
             if (!string.IsNullOrWhiteSpace(queryParameters.SortBy))
             {
                 query = queryParameters.SortBy.ToLower() switch

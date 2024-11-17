@@ -84,7 +84,7 @@ namespace StoreApi.Features.Carts
         {
             if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
                 throw new NotFoundException("Customer", customerId);
-            
+
             if (!await _repositoryManager.ProductRepository.CheckIfProductExists(cartCreateDto.ProductId))
                 throw new NotFoundException("Product", cartCreateDto.ProductId);
 
@@ -102,9 +102,9 @@ namespace StoreApi.Features.Carts
             await _repositoryManager.SaveAsync();
 
             _logger.LogInformation($"Cart saved successfully, returning read-only cart object.");
-            var product = 
+            var product =
                 await _repositoryManager.ProductRepository.GetProductByIdAsync(cartCreateDto.ProductId);
-            
+
             var cartToReturn = new CartReadDto
             (
                 Id: cartItem.Id,
@@ -146,6 +146,27 @@ namespace StoreApi.Features.Carts
             _repositoryManager.CartRepository.DeleteCart(cartItem);
 
             await _repositoryManager.SaveAsync();
+        }
+
+        public async Task DeleteCartsForCustomerAsync(Guid customerId)
+        {
+            _logger.LogInformation($"Fetching all cart items for customer to delete: {customerId}");
+            var cartItems = 
+                (await _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId)).ToList();
+            
+            if (cartItems.Count != 0)
+            {
+                _logger.LogInformation($"Deleting all cart items for customer: {customerId}");
+                foreach (var cartItem in cartItems)
+                {
+                    _repositoryManager.CartRepository.DeleteCart(cartItem);
+                }
+                await _repositoryManager.SaveAsync();
+            }
+            
+            else
+                _logger.LogInformation($"No cart items found for customer: {customerId}");
+            
         }
     }
 }

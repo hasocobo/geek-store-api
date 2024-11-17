@@ -1,4 +1,5 @@
-﻿using StoreApi.Features.Carts;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using StoreApi.Features.Carts;
 using StoreApi.Features.Categories;
 using StoreApi.Features.Customers;
 using StoreApi.Features.Orders;
@@ -17,5 +18,6 @@ namespace StoreApi.Features
         ICustomerRepository CustomerRepository { get; }
 
         Task SaveAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

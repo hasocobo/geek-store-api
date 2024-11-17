@@ -1,4 +1,5 @@
-﻿using StoreApi.Features.Carts;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using StoreApi.Features.Carts;
 using StoreApi.Features.Categories;
 using StoreApi.Features.Customers;
 using StoreApi.Features.Orders;
@@ -40,5 +41,8 @@ namespace StoreApi.Features
         public ICategoryRepository CategoryRepository => _categoryRepository;
 
         public async Task SaveAsync() => await _storeContext.SaveChangesAsync();
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync() =>
+            await _storeContext.Database.BeginTransactionAsync();
     }
 }

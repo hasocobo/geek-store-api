@@ -98,7 +98,7 @@ namespace StoreApi.Features.Orders
                     (
                         Id: oi.Id,
                         ProductId: oi.ProductId,
-                        ProductName: oi.Product.Name,
+                        ProductName: oi.Product!.Name,
                         UnitPrice: oi.Price,
                         Quantity: oi.Quantity
                     )).ToList()
@@ -116,10 +116,13 @@ namespace StoreApi.Features.Orders
             {
                 // TODO: Create an option for ordering directly without adding to cart
             }
-
+            
             _logger.LogInformation($"Fetching customer with ID: {customerId}'s cart items.");
-            var cartItems = await
-                _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId);
+            var cartItems = (await
+                _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId)).ToList();
+            
+            if (cartItems.Count == 0)
+                throw new NotFoundException("CartItems for customer", customerId);
 
             _logger.LogInformation($"Creating order items from each cart item.");
             var orderId = Guid.NewGuid();
@@ -132,7 +135,7 @@ namespace StoreApi.Features.Orders
                         ProductId = ci.ProductId,
                         Product = ci.Product,
                         OrderId = orderId,
-                        Price = ci.Product.Price
+                        Price = ci.Product!.Price
                     })
                 .ToList();
 
@@ -157,7 +160,7 @@ namespace StoreApi.Features.Orders
                 (
                     Id: oi.Id,
                     ProductId: oi.ProductId,
-                    ProductName: oi.Product.Name,
+                    ProductName: oi.Product!.Name,
                     UnitPrice: oi.Price,
                     Quantity: oi.Quantity
                 )

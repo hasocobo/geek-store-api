@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
+using StoreApi.Common.ModelBinders;
 
 namespace StoreApi.Common.QueryFeatures;
 
@@ -17,8 +19,11 @@ public class QueryParameters
         set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
     }
 
-    public string SortBy { get; set; } = "Id";
+    public string? SortBy { get; set; }
     public bool SortDescending { get; set; } = false;
-    
+
+    [ModelBinder(BinderType = typeof(FiltersModelBinder))]
+    public List<Filter> Filters { get; set; } = new();
+
     public string? SearchTerm { get; set; }
 }
