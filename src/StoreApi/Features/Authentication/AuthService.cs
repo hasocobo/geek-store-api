@@ -55,59 +55,71 @@ public class AuthService : IAuthService
         _logger.LogInformation($"Returning all users");
         var usersToReturn =
             users.Select(u => new UserDetails(Id: u.Id, FirstName: u.FirstName, LastName: u.LastName,
-                UserName: u.UserName, DateOfBirth: u.DateOfBirth, Email: u.Email));
+                UserName: u.UserName!, DateOfBirth: u.DateOfBirth, Email: u.Email!));
 
         return usersToReturn;
     }
 
     public async Task<(IdentityResult, UserDetails)> RegisterUserAndCustomerAsync(UserRegistrationDto registerDto)
     {
-        _logger.LogInformation("Registering user");
-        var newUser = new User
+        await using var transaction = await _repositoryManager.BeginTransactionAsync();
+        try
         {
-            FirstName = registerDto.FirstName,
-            LastName = registerDto.LastName,
-            Email = registerDto.Email,
-            UserName = registerDto.UserName,
-            DateOfBirth = registerDto.DateOfBirth ?? DateTime.MinValue,
-        };
-
-        var result = await _userManager.CreateAsync(newUser, registerDto.Password);
-
-        if (result.Succeeded)
-        {
-            _logger.LogInformation("User registration successful");
-            if (registerDto.Roles != null)
+            _logger.LogInformation("Registering user");
+            var newUser = new User
             {
-                _logger.LogInformation("Registering roles to user");
-                await _userManager.AddToRolesAsync(newUser, registerDto.Roles);
-            }
-
-            _logger.LogInformation("Registering customer");
-            var customer = new Customer
-            {
-                UserId = newUser.Id,
-                Id = Guid.NewGuid(),
-                Address = registerDto.Address,
-                PhoneNumber = registerDto.PhoneNumber,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Email = registerDto.Email,
+                UserName = registerDto.UserName,
+                DateOfBirth = registerDto.DateOfBirth ?? DateTime.MinValue,
             };
 
-            _repositoryManager.CustomerRepository.CreateCustomer(customer);
-            await _repositoryManager.SaveAsync();
+            var result = await _userManager.CreateAsync(newUser, registerDto.Password);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User registration successful");
+                if (registerDto.Roles != null)
+                {
+                    _logger.LogInformation("Registering roles to user");
+                    await _userManager.AddToRolesAsync(newUser, registerDto.Roles);
+                }
+
+                _logger.LogInformation("Registering customer");
+                var customer = new Customer
+                {
+                    UserId = newUser.Id,
+                    Id = Guid.NewGuid(),
+                    Address = registerDto.Address,
+                    PhoneNumber = registerDto.PhoneNumber,
+                };
+
+                _repositoryManager.CustomerRepository.CreateCustomer(customer);
+                await _repositoryManager.SaveAsync();
+                await transaction.CommitAsync();
+            }
+
+            _logger.LogInformation("Returning user details.");
+            var userDetails = new UserDetails
+            (
+                Id: newUser.Id,
+                FirstName: newUser.FirstName,
+                LastName: newUser.LastName,
+                DateOfBirth: newUser.DateOfBirth,
+                Email: newUser.Email,
+                UserName: newUser.UserName
+            );
+
+            return (result, userDetails);
         }
 
-        _logger.LogInformation("Returning user details.");
-        var userDetails = new UserDetails
-        (
-            Id: newUser.Id,
-            FirstName: newUser.FirstName,
-            LastName: newUser.LastName,
-            DateOfBirth: newUser.DateOfBirth,
-            Email: newUser.Email,
-            UserName: newUser.UserName
-        );
-
-        return (result, userDetails);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error registering user");
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<bool> ValidateUserAsync(UserAuthenticationDto userAuthenticationDto)
