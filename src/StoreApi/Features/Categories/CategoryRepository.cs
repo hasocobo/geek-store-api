@@ -18,10 +18,20 @@ namespace StoreApi.Features.Categories
 
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                .Include(c => c.SubCategories)
+                .ToListAsync();
         }
 
         public async Task<Category?> GetCategoryByIdAsync(Guid categoryId)
+        {
+            return await FindByCondition(category =>
+                    category.Id.Equals(categoryId))
+                .Include(c => c.SubCategories)
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<Category?> GetCategoryWithoutSubCategoriesByIdAsync(Guid categoryId)
         {
             return await FindByCondition(category =>
                     category.Id.Equals(categoryId))

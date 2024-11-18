@@ -34,7 +34,7 @@ namespace StoreApi.Features.Orders
                         (
                             Id: oi.Id,
                             ProductId: oi.ProductId,
-                            ProductName: oi.Product.Name,
+                            ProductName: oi.Product!.Name,
                             UnitPrice: oi
                                 .Price, // not oi.Product.Price because then it results in inconsistency in case of a price change.
                             Quantity: oi.Quantity
@@ -67,7 +67,7 @@ namespace StoreApi.Features.Orders
                         (
                             Id: oi.Id,
                             ProductId: oi.ProductId,
-                            ProductName: oi.Product.Name,
+                            ProductName: oi.Product!.Name,
                             UnitPrice: oi.Price,
                             Quantity: oi.Quantity
                         )).ToList()
@@ -123,7 +123,7 @@ namespace StoreApi.Features.Orders
             if (cartItems.Count == 0)
                 throw new NotFoundException("CartItems for customer", customerId);
 
-            _logger.LogInformation($"Beginning transaction.");
+            _logger.LogInformation($"Beginning transaction for user registration.");
             await using var transaction = await _repositoryManager.BeginTransactionAsync();
             try
             {

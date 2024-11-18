@@ -171,6 +171,13 @@ namespace StoreApi.Infrastructure
                     .WithOne(e => e.Category)
                     .HasForeignKey(e => e.CategoryId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                // One Category to Many Subcategories 
+                entity
+                    .HasOne(e => e.ParentCategory)
+                    .WithMany(e => e.SubCategories)
+                    .HasForeignKey(e => e.ParentCategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -183,7 +190,7 @@ namespace StoreApi.Infrastructure
                     .HasForeignKey<Customer>(e => e.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
-            
+
             // Seed initial data
             //modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             //modelBuilder.ApplyConfiguration(new ProductConfiguration());

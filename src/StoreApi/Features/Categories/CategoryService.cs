@@ -15,15 +15,19 @@ namespace StoreApi.Features.Categories
             _logger = logger;
         }
 
+        private async Task GetCategoryPath(Category category)
+        {
+        }
+
         public async Task<IEnumerable<CategoryReadDto>> GetCategoriesAsync()
         {
             _logger.LogInformation("Getting all categories");
             var categories =
                 await _repositoryManager.CategoryRepository.GetAllCategoriesAsync();
-            
+
             var categoriesToReturn = categories
-                .Select(c => new CategoryReadDto(Id: c.Id, Name: c.Name));
-            
+                .Select(c => new CategoryReadDto { Id = c.Id, Name = c.Name, ParentCategoryId = c.ParentCategoryId });
+
             return categoriesToReturn;
         }
 
@@ -34,24 +38,40 @@ namespace StoreApi.Features.Categories
                 await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
             if (category is null)
                 throw new NotFoundException("Category", id);
-            
-            return new CategoryReadDto(Id: category.Id, Name: category.Name);
+
+            return new CategoryReadDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                ParentCategoryId = category.ParentCategoryId,
+                SubCategories = category.SubCategories.Select
+                    (sc => new CategoryReadDto { Id = sc.Id, Name = sc.Name })
+            };
         }
 
         public async Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto)
         {
+            if (categoryCreateDto.ParentCategoryId != null &&
+                !await _repositoryManager.CategoryRepository
+                    .CheckIfCategoryExists(categoryCreateDto.ParentCategoryId.Value))
+            {
+                throw new NotFoundException("Parent Category", categoryCreateDto.ParentCategoryId.Value);
+            }
+
             _logger.LogInformation("Creating new category");
             var category = new Category
             {
                 Id = Guid.NewGuid(),
                 Name = categoryCreateDto.Name,
+                ParentCategoryId = categoryCreateDto.ParentCategoryId
             };
             _repositoryManager.CategoryRepository.CreateCategory(category);
             await _repositoryManager.SaveAsync();
-            
+
             _logger.LogInformation("Category creation successful, returning category data transfer object.");
-            var categoryToReturn = new CategoryReadDto(Id: category.Id, Name: category.Name);
-            
+            var categoryToReturn = new CategoryReadDto
+                { Id = category.Id, Name = category.Name, ParentCategoryId = category.ParentCategoryId };
+
             return categoryToReturn;
         }
 
@@ -62,11 +82,11 @@ namespace StoreApi.Features.Categories
                 await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
             if (categoryToUpdate is null)
                 throw new NotFoundException("Category", id);
-            
+
             _logger.LogInformation($"Updating category with id: {id}");
             categoryToUpdate.Name = categoryUpdateDto.Name;
             _repositoryManager.CategoryRepository.UpdateCategory(categoryToUpdate);
-            
+
             await _repositoryManager.SaveAsync();
         }
 
@@ -77,10 +97,10 @@ namespace StoreApi.Features.Categories
                 await _repositoryManager.CategoryRepository.GetCategoryByIdAsync(id);
             if (categoryToDelete is null)
                 throw new NotFoundException("Category", id);
-            
+
             _logger.LogInformation($"Deleting category with id: {id}");
             _repositoryManager.CategoryRepository.DeleteCategory(categoryToDelete);
-            
+
             await _repositoryManager.SaveAsync();
         }
     }

@@ -1,3 +1,5 @@
-﻿namespace StoreApi.Common.DataTransferObjects.Categories;
+﻿using StoreApi.Common.ValidationAttributes;
 
-public record CategoryCreateDto(string Name);
+namespace StoreApi.Common.DataTransferObjects.Categories;
+
+public record CategoryCreateDto(string Name, Guid? ParentCategoryId);
