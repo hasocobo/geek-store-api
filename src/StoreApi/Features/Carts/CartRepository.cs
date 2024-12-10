@@ -17,14 +17,14 @@ namespace StoreApi.Features.Carts
             return await FindAll().Include(ci => ci.Product).ToListAsync();
         }
 
-        public async Task<Cart?> GetCartByIdAsync(Guid cartId)
+        public async Task<Cart?> GetCartItemByIdAsync(Guid cartId)
         {
             return await FindByCondition(cart => cart.Id.Equals(cartId))
                 .Include(ci => ci.Product)
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Cart>> GetCartsByCustomerIdAsync(Guid customerId)
+        public async Task<IEnumerable<Cart>> GetCartByCustomerIdAsync(Guid customerId)
         {
             return await FindByCondition(cart => cart.CustomerId.Equals(customerId))
                 .Include(ci => ci.Product)
@@ -36,12 +36,12 @@ namespace StoreApi.Features.Carts
             Create(cart);
         }
 
-        public void UpdateCart(Cart cart)
+        public void UpdateCartItem(Cart cart)
         {
             Update(cart);
         }
 
-        public void DeleteCart(Cart cart)
+        public void DeleteCartItem(Cart cart)
         {
             Delete(cart);
         }

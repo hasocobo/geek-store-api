@@ -5,11 +5,11 @@ namespace StoreApi.Features.Carts
     public interface ICartRepository
     {
         Task<IEnumerable<Cart>> GetCartsAsync();
-        Task<Cart?> GetCartByIdAsync(Guid cartId);
-        Task<IEnumerable<Cart>> GetCartsByCustomerIdAsync(Guid customerId);
+        Task<Cart?> GetCartItemByIdAsync(Guid cartId);
+        Task<IEnumerable<Cart>> GetCartByCustomerIdAsync(Guid customerId);
         
         void AddToCart(Cart cart);
-        void UpdateCart(Cart cart);
-        void DeleteCart(Cart cart);
+        void UpdateCartItem(Cart cart);
+        void DeleteCartItem(Cart cart);
     }
 }

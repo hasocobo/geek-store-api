@@ -28,39 +28,46 @@ namespace StoreApi.Features.Carts
         }
 
         [HttpGet("carts/{id:guid}")]
-        public async Task<ActionResult<CartReadDto>> GetCartById(Guid id)
+        public async Task<ActionResult<CartReadDto>> GetCartItemById(Guid id)
         {
-            var cart = await _serviceManager.CartService.GetCartByIdAsync(id);
+            var cart = await _serviceManager.CartService.GetCartItemByIdAsync(id);
             return Ok(cart);
         }
 
-        [HttpGet("customers/{customerId:guid}/carts")]
-        public async Task<ActionResult<Cart>> GetCartsByCustomerId(Guid customerId)
+        [HttpGet("customers/{customerId:guid}/cart")]
+        public async Task<ActionResult<Cart>> GetCartByCustomerId(Guid customerId)
         {
-            var cartItems = await _serviceManager.CartService.GetCartsByCustomerIdAsync(customerId);
+            var cartItems = await _serviceManager.CartService.GetCartByCustomerIdAsync(customerId);
             return Ok(cartItems);
         }
 
-        [HttpPost("customers/{customerId:guid}/carts")]
-        public async Task<ActionResult<CartReadDto>> CreateCartForCustomer(Guid customerId,
+        [HttpPost("customers/{customerId:guid}/cart")]
+        public async Task<ActionResult<CartReadDto>> CreateCartItemForCustomer(Guid customerId,
             [FromBody] CartCreateDto cartCreateDto)
         {
             var cartToReturn = await _serviceManager.CartService
-                .CreateCartForCustomerAsync(customerId, cartCreateDto);
-            return CreatedAtAction(nameof(GetCartById), new { id = cartToReturn.Id }, cartToReturn);
+                .CreateCartItemForCustomerAsync(customerId, cartCreateDto);
+            return CreatedAtAction(nameof(GetCartItemById), new { id = cartToReturn.Id }, cartToReturn);
         }
 
-        [HttpPut("customers/{customerId:guid}/carts/{id:guid}")]
+        [HttpPut("customers/{customerId:guid}/cart/{id:guid}")]
         public async Task<ActionResult> UpdateCartItemForCustomer(Guid customerId, Guid id, CartUpdateDto cartUpdateDto)
         {
-            await _serviceManager.CartService.UpdateCartAsync(customerId, id, cartUpdateDto);
+            await _serviceManager.CartService.UpdateCartItemAsync(customerId, id, cartUpdateDto);
             return Ok();
         }
 
-        [HttpDelete("carts/{id:guid}")]
-        public async Task<ActionResult> DeleteCartItem(Guid id)
+        [HttpDelete("cart/{id:guid}")]
+        public async Task<ActionResult> DeleteCartItemById(Guid id)
         {
-            await _serviceManager.CartService.DeleteCartAsync(id);
+            await _serviceManager.CartService.DeleteCartItemByIdAsync(id);
+            return NoContent();
+        }
+
+        [HttpDelete("customers/{customerId:guid}/cart")]
+        public async Task<ActionResult> DeleteCartByCustomerId(Guid customerId)
+        {
+            await _serviceManager.CartService.DeleteCartForCustomerAsync(customerId);
             return NoContent();
         }
     }

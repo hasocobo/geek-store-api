@@ -28,6 +28,7 @@ namespace StoreApi.Features.Carts
                     (
                         Id: ci.Id,
                         ProductId: ci.ProductId,
+                        CustomerId: ci.CustomerId,
                         Quantity: ci.Quantity,
                         ProductName: ci.Product.Name,
                         UnitPrice: ci.Product.Price
@@ -36,19 +37,20 @@ namespace StoreApi.Features.Carts
             return cartItemsToReturn;
         }
 
-        public async Task<CartReadDto> GetCartByIdAsync(Guid cartId)
+        public async Task<CartReadDto> GetCartItemByIdAsync(Guid cartId)
         {
-            _logger.LogInformation($"Getting cart with Id: {cartId}");
+            _logger.LogInformation($"Getting cart item with Id: {cartId}");
             var cartItem =
-                await _repositoryManager.CartRepository.GetCartByIdAsync(cartId);
+                await _repositoryManager.CartRepository.GetCartItemByIdAsync(cartId);
             if (cartItem is null)
                 throw new NotFoundException("Cart item", cartId);
 
-            _logger.LogInformation($"Returning cart with Id: {cartId}");
+            _logger.LogInformation($"Returning cart item with Id: {cartId}");
             var cartItemToReturn = new CartReadDto
             (
                 Id: cartItem.Id,
                 ProductId: cartItem.ProductId,
+                CustomerId: cartItem.CustomerId,
                 Quantity: cartItem.Quantity,
                 ProductName: cartItem.Product.Name,
                 UnitPrice: cartItem.Product.Price
@@ -56,22 +58,23 @@ namespace StoreApi.Features.Carts
             return cartItemToReturn;
         }
 
-        public async Task<IEnumerable<CartReadDto>> GetCartsByCustomerIdAsync(Guid customerId)
+        public async Task<IEnumerable<CartReadDto>> GetCartByCustomerIdAsync(Guid customerId)
         {
             if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
                 throw new NotFoundException("Customer", customerId);
 
-            _logger.LogInformation($"Getting carts for Customer: {customerId}");
+            _logger.LogInformation($"Getting the shopping cart of Customer: {customerId}");
             var cartItems =
-                await _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId);
+                await _repositoryManager.CartRepository.GetCartByCustomerIdAsync(customerId);
 
-            _logger.LogInformation($"Returning carts for Customer: {customerId}");
+            _logger.LogInformation($"Returning the shopping cart of Customer: {customerId}");
             var cartItemsToReturn =
                 cartItems.Select(ci =>
                     new CartReadDto
                     (
                         Id: ci.Id,
                         ProductId: ci.ProductId,
+                        CustomerId: ci.CustomerId,
                         Quantity: ci.Quantity,
                         ProductName: ci.Product.Name,
                         UnitPrice: ci.Product.Price
@@ -80,7 +83,7 @@ namespace StoreApi.Features.Carts
             return cartItemsToReturn;
         }
 
-        public async Task<CartReadDto> CreateCartForCustomerAsync(Guid customerId, CartCreateDto cartCreateDto)
+        public async Task<CartReadDto> CreateCartItemForCustomerAsync(Guid customerId, CartCreateDto cartCreateDto)
         {
             if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
                 throw new NotFoundException("Customer", customerId);
@@ -109,6 +112,7 @@ namespace StoreApi.Features.Carts
             (
                 Id: cartItem.Id,
                 ProductId: product.Id,
+                CustomerId: customerId,
                 Quantity: cartItem.Quantity,
                 ProductName: product.Name,
                 UnitPrice: product.Price
@@ -116,50 +120,53 @@ namespace StoreApi.Features.Carts
             return cartToReturn;
         }
 
-        public async Task UpdateCartAsync(Guid customerId, Guid id, CartUpdateDto cartUpdateDto)
+        public async Task UpdateCartItemAsync(Guid customerId, Guid id, CartUpdateDto cartUpdateDto)
         {
             if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
                 throw new NotFoundException("Customer", customerId);
 
             _logger.LogInformation($"Fetching cart item: {id} for customer: {customerId} to update.");
             var cartToUpdate =
-                await _repositoryManager.CartRepository.GetCartByIdAsync(id);
+                await _repositoryManager.CartRepository.GetCartItemByIdAsync(id);
             if (cartToUpdate is null)
                 throw new NotFoundException("Cart item", id);
 
             _logger.LogInformation($"Updating cart item: {id} for customer: {customerId}.");
             cartToUpdate.Quantity = cartUpdateDto.Quantity;
-            _repositoryManager.CartRepository.UpdateCart(cartToUpdate);
+            _repositoryManager.CartRepository.UpdateCartItem(cartToUpdate);
 
             await _repositoryManager.SaveAsync();
         }
 
-        public async Task DeleteCartAsync(Guid id)
+        public async Task DeleteCartItemByIdAsync(Guid id)
         {
             _logger.LogInformation($"Fetching cart to delete with Id: {id}");
             var cartItem =
-                await _repositoryManager.CartRepository.GetCartByIdAsync(id);
+                await _repositoryManager.CartRepository.GetCartItemByIdAsync(id);
             if (cartItem is null)
                 throw new NotFoundException("Cart item", id);
 
             _logger.LogInformation($"Deleting cart with Id: {id}");
-            _repositoryManager.CartRepository.DeleteCart(cartItem);
+            _repositoryManager.CartRepository.DeleteCartItem(cartItem);
 
             await _repositoryManager.SaveAsync();
         }
 
-        public async Task DeleteCartsForCustomerAsync(Guid customerId)
+        public async Task DeleteCartForCustomerAsync(Guid customerId)
         {
+            if (!await _repositoryManager.CustomerRepository.CheckIfCustomerExists(customerId))
+                throw new NotFoundException("Customer", customerId);
+            
             _logger.LogInformation($"Fetching all cart items for customer to delete: {customerId}");
             var cartItems = 
-                (await _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId)).ToList();
+                (await _repositoryManager.CartRepository.GetCartByCustomerIdAsync(customerId)).ToList();
             
             if (cartItems.Count != 0)
             {
                 _logger.LogInformation($"Deleting all cart items for customer: {customerId}");
                 foreach (var cartItem in cartItems)
                 {
-                    _repositoryManager.CartRepository.DeleteCart(cartItem);
+                    _repositoryManager.CartRepository.DeleteCartItem(cartItem);
                 }
                 await _repositoryManager.SaveAsync();
             }

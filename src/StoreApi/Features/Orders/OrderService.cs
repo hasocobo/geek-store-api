@@ -118,7 +118,7 @@ namespace StoreApi.Features.Orders
 
             _logger.LogInformation($"Fetching customer with ID: {customerId}'s cart items.");
             var cartItems = (await
-                _repositoryManager.CartRepository.GetCartsByCustomerIdAsync(customerId)).ToList();
+                _repositoryManager.CartRepository.GetCartByCustomerIdAsync(customerId)).ToList();
 
             if (cartItems.Count == 0)
                 throw new NotFoundException("CartItems for customer", customerId);
@@ -157,7 +157,7 @@ namespace StoreApi.Features.Orders
                 _logger.LogInformation($"Deleting cart items for customer: {customerId}.");
                 foreach (var cartItem in cartItems)
                 {
-                    _repositoryManager.CartRepository.DeleteCart(cartItem);
+                    _repositoryManager.CartRepository.DeleteCartItem(cartItem);
                 }
 
                 _logger.LogInformation($"Saving changes and committing transaction.");
