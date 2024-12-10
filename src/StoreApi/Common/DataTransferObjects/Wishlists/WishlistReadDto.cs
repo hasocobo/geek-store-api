@@ -1,3 +1,10 @@
-﻿namespace StoreApi.Common.DataTransferObjects.Wishlists;
+﻿using StoreApi.Common.ValidationAttributes;
 
-public record WishlistReadDto(Guid Id, Guid? ProductId, string? ProductName, string? ProductDescription);
+namespace StoreApi.Common.DataTransferObjects.Wishlists;
+
+public record WishlistReadDto(
+    Guid Id,
+    Guid ProductId,
+    Guid CustomerId,
+    string? ProductName,
+    string? ProductDescription);

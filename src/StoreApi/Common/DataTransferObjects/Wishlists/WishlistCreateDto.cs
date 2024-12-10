@@ -1,3 +1,7 @@
-﻿namespace StoreApi.Common.DataTransferObjects.Wishlists;
+﻿using StoreApi.Common.ValidationAttributes;
 
-public record WishlistCreateDto(Guid ProductId);
+namespace StoreApi.Common.DataTransferObjects.Wishlists;
+
+public record WishlistCreateDto([NotEmptyGuid] Guid ProductId); // wishlist service already checks if the product
+                                                                // with entered product id exists but
+                                                                // still this is useful for throwing exceptions earlier. 

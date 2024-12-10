@@ -28,8 +28,9 @@ namespace StoreApi.Features.Wishlists
                     new WishlistReadDto
                     (
                         Id: wi.Id,
+                        CustomerId: wi.CustomerId,
                         ProductId: wi.ProductId,
-                        ProductName: wi.Product.Name,
+                        ProductName: wi.Product!.Name,
                         ProductDescription: wi.Product.Description
                     )
             );
@@ -48,8 +49,9 @@ namespace StoreApi.Features.Wishlists
             var wishlistItemToReturn = new WishlistReadDto
             (
                 Id: wishlistItem.Id,
+                CustomerId: wishlistItem.CustomerId,
                 ProductId: wishlistItem.ProductId,
-                ProductName: wishlistItem.Product.Name,
+                ProductName: wishlistItem.Product!.Name,
                 ProductDescription: wishlistItem.Product.Description
             );
 
@@ -70,8 +72,9 @@ namespace StoreApi.Features.Wishlists
                 new WishlistReadDto
                 (
                     Id: wi.Id,
+                    CustomerId: wi.CustomerId,
                     ProductId: wi.ProductId,
-                    ProductName: wi.Product.Name,
+                    ProductName: wi.Product!.Name,
                     ProductDescription: wi.Product.Description
                 )
             );
@@ -88,7 +91,7 @@ namespace StoreApi.Features.Wishlists
             if (!await _repositoryManager.ProductRepository.CheckIfProductExists(wishlistCreateDto.ProductId))
                 throw new NotFoundException("Product", wishlistCreateDto.ProductId);
             
-            _logger.LogInformation($"Creating wishlist for customer: {customerId}");
+            _logger.LogInformation($"Adding a product to customer: {customerId}'s wishlist ");
             var wishlistItem = new Wishlist
             {
                 Id = Guid.NewGuid(),
@@ -106,8 +109,9 @@ namespace StoreApi.Features.Wishlists
             var wishlistItemToReturn = new WishlistReadDto
             (
                 Id: wishlistItem.Id,
+                CustomerId: wishlistItem.CustomerId,
                 ProductId: wishlistCreateDto.ProductId,
-                ProductName: product.Name,
+                ProductName: product!.Name,
                 ProductDescription: product.Description
             );
 

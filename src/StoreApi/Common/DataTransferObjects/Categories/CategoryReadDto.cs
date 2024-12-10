@@ -8,5 +8,5 @@ public record CategoryReadDto
 
     public Guid? ParentCategoryId { get; set; }
 
-    public IEnumerable<CategoryReadDto>? SubCategories { get; set; }
+    public IEnumerable<CategoryReadDto> SubCategories { get; set; } = new List<CategoryReadDto>();
 };

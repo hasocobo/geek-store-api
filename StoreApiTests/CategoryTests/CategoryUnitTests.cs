@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using StoreApi.Common.DataTransferObjects.Categories;
@@ -7,7 +6,7 @@ using StoreApi.Entities.Exceptions;
 using StoreApi.Features;
 using StoreApi.Features.Categories;
 
-namespace StoreApiTests.UnitTests;
+namespace StoreApiTests.CategoryTests;
 
 public class CategoryUnitTests
 {
@@ -186,10 +185,10 @@ public class CategoryUnitTests
         var categoryToDelete = new Category { Id = categoryId, Name = "Category To Delete" };
         _categoryRepositoryMock.Setup(repo
             => repo.GetCategoryByIdAsync(categoryId)).ReturnsAsync(categoryToDelete);
-        
+
         // Act
         await _categoryService.DeleteCategoryAsync(categoryId);
-        
+
         // Assert
         _categoryRepositoryMock.Verify(repo => repo.DeleteCategory(categoryToDelete), Times.Once);
     }
@@ -201,7 +200,7 @@ public class CategoryUnitTests
         var categoryId = Guid.NewGuid();
         _categoryRepositoryMock.Setup(repo
             => repo.GetCategoryByIdAsync(categoryId)).ReturnsAsync(null as Category);
-        
+
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() => _categoryService.DeleteCategoryAsync(categoryId));
     }
