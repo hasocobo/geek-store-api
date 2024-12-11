@@ -6,7 +6,5 @@ namespace StoreApi.Features.Customers
     {
         Task<IEnumerable<Customer>> GetCustomersAsync();
         Task<Customer> GetCustomerByIdAsync(Guid customerId);
-        
-        Task CreateCustomerAsync(Customer customer);
     }
 }

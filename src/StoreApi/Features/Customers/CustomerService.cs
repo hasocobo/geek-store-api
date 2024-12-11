@@ -24,11 +24,5 @@ namespace StoreApi.Features.Customers
             return await _repositoryManager.CustomerRepository.GetCustomerByIdAsync(id) ??
                    throw new NotFoundException("Customer", id);
         }
-
-        public async Task CreateCustomerAsync(Customer customer)
-        {
-            _repositoryManager.CustomerRepository.CreateCustomer(customer);
-            await _repositoryManager.SaveAsync();
-        }
     }
 }
