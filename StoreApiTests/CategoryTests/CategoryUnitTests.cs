@@ -191,6 +191,7 @@ public class CategoryUnitTests
 
         // Assert
         _categoryRepositoryMock.Verify(repo => repo.DeleteCategory(categoryToDelete), Times.Once);
+        _repositoryManagerMock.Verify(rm => rm.SaveAsync(), Times.Once);
     }
 
     [Fact]

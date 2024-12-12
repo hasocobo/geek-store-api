@@ -2,4 +2,9 @@
 
 namespace StoreApi.Common.DataTransferObjects.Orders;
 
-public record OrderCreateDto(Guid? ShipmentId, Guid? PaymentId, ICollection<OrderItem>? OrderItems);
+public record OrderCreateDto
+{
+    public Guid? ShipmentId { get; init; }
+    public Guid? PaymentId { get; init; }
+    public ICollection<OrderItem>? OrderItems { get; init; }
+}
