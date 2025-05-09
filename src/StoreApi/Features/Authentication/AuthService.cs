@@ -151,7 +151,7 @@ public class AuthService : IAuthService
         }
 
         _logger.LogInformation("Creating signing credentials");
-        var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("DOTNETJWTSECRET") ?? throw new
+        var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("STORE_API_JWT_SECRET") ?? throw new
             InvalidOperationException());
         var secret = new SymmetricSecurityKey(key);
         var signingCredentials = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);

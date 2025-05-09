@@ -1,0 +1,14 @@
+﻿services:
+  StoreApi:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    volumes:
+      - ./src/StoreApi:/app
+    working_dir: /app
+    environment:
+      STORE_API_JWT_SECRET: ${STORE_API_JWT_SECRET:-"123456789"} 
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_RUNNING_IN_CONTAINER: true
+      ASPNETCORE_HTTP_PORTS: 5000
+    ports :
+      - "5000:5000"
+    command: dotnet watch run

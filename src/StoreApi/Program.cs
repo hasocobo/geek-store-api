@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -17,7 +16,7 @@ builder.Host.UseSerilog();
 builder.Services.AddLogging();
 
 builder.Services.AddDbContext<StoreContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresqlConnection"))
 );
 builder.Services.AddEntityRepositories();
 builder.Services.AddEntityServices();
@@ -43,6 +42,8 @@ app.ConfigureExceptionHandler(logger);
 if (app.Environment.IsProduction())
 {
     app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 if (app.Environment.IsDevelopment())

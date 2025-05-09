@@ -1,0 +1,12 @@
+﻿services:
+  StoreApi:
+    image: storeapi
+    build:
+      context: ./src/StoreApi
+      dockerfile: Dockerfile
+    environment:
+      STORE_API_JWT_SECRET: ${STORE_API_JWT_SECRET:-"123456789"}
+      DOTNET_RUNNING_IN_CONTAINER: true
+      ASPNETCORE_HTTP_PORTS: 5000
+    ports:
+      - "5000:5000"

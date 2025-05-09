@@ -68,7 +68,7 @@ namespace StoreApi.Extensions
         public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = Environment.GetEnvironmentVariable("DOTNETJWTSECRET");
+            var secretKey = Environment.GetEnvironmentVariable("STORE_API_JWT_SECRET") ?? "jwt key";
 
             services.AddAuthentication(o =>
             {

@@ -4,12 +4,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EB20D4DA-7F39-4282-A2F9-7609C379EDC0}"
+	ProjectSection(SolutionItems) = preProject
+		src\.env = src\.env
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreApi", "src\StoreApi\StoreApi.csproj", "{E1022460-769D-47A6-91CD-613010D5D840}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7CF96AE6-B60B-4A40-B4E0-E7DC9B88888E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreApiTests", "StoreApiTests\StoreApiTests.csproj", "{96D73930-66F1-434F-BA9C-71AEFA6C0584}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B564F0B-73A6-42F5-B454-99FEB6513BD3}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+		compose.development.yaml = compose.development.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
