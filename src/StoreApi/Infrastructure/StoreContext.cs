@@ -192,14 +192,14 @@ namespace StoreApi.Infrastructure
             });
 
             // Seed initial data
-            //modelBuilder.ApplyConfiguration(new CategoryConfiguration());
-            //modelBuilder.ApplyConfiguration(new ProductConfiguration());
-            //modelBuilder.ApplyConfiguration(new UserConfiguration());
-            //modelBuilder.ApplyConfiguration(new CustomerConfiguration());
-            //modelBuilder.ApplyConfiguration(new WishlistConfiguration());
-            //modelBuilder.ApplyConfiguration(new OrderConfiguration());
-            //modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
-            //modelBuilder.ApplyConfiguration(new CartConfiguration());
+            // modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            // modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            // modelBuilder.ApplyConfiguration(new UserConfiguration());
+            // modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+            // modelBuilder.ApplyConfiguration(new WishlistConfiguration());
+            // modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            // modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+            // modelBuilder.ApplyConfiguration(new CartConfiguration());
         }
     }
 }

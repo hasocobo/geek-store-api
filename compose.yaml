@@ -1,5 +1,5 @@
 ﻿services:
-  StoreApi:
+  store-api:
     image: storeapi
     build:
       context: ./src/StoreApi

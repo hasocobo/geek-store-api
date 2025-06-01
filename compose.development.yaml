@@ -1,14 +1,33 @@
 ﻿services:
-  StoreApi:
+  kafka:
+    image: bitnami/kafka:3.7
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    ports: [ "9092:9092" ]
+    
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on: [ kafka ]
+    ports: [ "8080:8080" ]
+
+  store-api:
     image: mcr.microsoft.com/dotnet/sdk:8.0
-    volumes:
-      - ./src/StoreApi:/app
+    volumes: [ "./src/StoreApi:/app" ]
     working_dir: /app
     environment:
-      STORE_API_JWT_SECRET: ${STORE_API_JWT_SECRET:-"123456789"} 
+      STORE_API_JWT_SECRET: ${STORE_API_JWT_SECRET:-"123456789"}
       ASPNETCORE_ENVIRONMENT: Development
       DOTNET_RUNNING_IN_CONTAINER: true
       ASPNETCORE_HTTP_PORTS: 5000
-    ports :
-      - "5000:5000"
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     command: dotnet watch run
+    depends_on: [ kafka ]
+    ports: [ "5000:5000" ]

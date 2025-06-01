@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using StoreApi.Extensions;
 using StoreApi.Infrastructure;
+using StoreApi.Infrastructure.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +17,12 @@ builder.Host.UseSerilog();
 builder.Services.AddLogging();
 
 builder.Services.AddDbContext<StoreContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresqlConnection"))
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 builder.Services.AddEntityRepositories();
 builder.Services.AddEntityServices();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
