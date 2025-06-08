@@ -31,3 +31,17 @@
     command: dotnet watch run
     depends_on: [ kafka ]
     ports: [ "5000:5000" ]
+    
+  payment-service:
+    build:
+      context: ./src/StoreApi.PaymentService
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src/StoreApi.PaymentService:/app
+    working_dir: /app
+    command: ./gradlew bootRun --no-daemon
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on: [ kafka ]
+    ports: ["5001:8080"]

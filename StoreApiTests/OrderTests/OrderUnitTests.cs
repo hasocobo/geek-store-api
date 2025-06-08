@@ -10,6 +10,7 @@ using StoreApi.Features.Carts;
 using StoreApi.Features.Customers;
 using StoreApi.Features.Orders;
 using StoreApi.Features.Products;
+using StoreApi.Infrastructure.Messaging;
 
 namespace StoreApiTests.OrderTests;
 
@@ -23,15 +24,19 @@ public class OrderUnitTests
     private readonly Mock<IDbContextTransaction> _transactionMock;
 
     private readonly IOrderService _orderService;
+    private readonly Mock<IEventPublisher> _eventPublisher;
 
     public OrderUnitTests()
     {
         _orderRepositoryMock = new Mock<IOrderRepository>();
         _productRepositoryMock = new Mock<IProductRepository>();
         _customerRepositoryMock = new Mock<ICustomerRepository>();
-        _repositoryManagerMock = new Mock<IRepositoryManager>();
         _cartRepositoryMock = new Mock<ICartRepository>();
+
+        _repositoryManagerMock = new Mock<IRepositoryManager>();
         _transactionMock = new Mock<IDbContextTransaction>();
+
+        _eventPublisher = new Mock<IEventPublisher>();
 
         _repositoryManagerMock.Setup(rm
             => rm.OrderRepository).Returns(_orderRepositoryMock.Object);
@@ -51,7 +56,8 @@ public class OrderUnitTests
         _repositoryManagerMock.Setup(rm
             => rm.SaveAsync()).Returns(Task.CompletedTask);
 
-        _orderService = new OrderService(_repositoryManagerMock.Object, NullLogger<OrderService>.Instance);
+        _orderService = new OrderService(_repositoryManagerMock.Object, NullLogger<OrderService>.Instance,
+            _eventPublisher.Object);
     }
 
     [Fact]

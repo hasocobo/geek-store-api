@@ -1,4 +1,14 @@
 ﻿services:
+  kafka:
+    image: bitnami/kafka:3.7
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    ports: [ "9092:9092" ]
   store-api:
     image: storeapi
     build:
@@ -10,3 +20,12 @@
       ASPNETCORE_HTTP_PORTS: 5000
     ports:
       - "5000:5000"
+  payment-service:
+    build:
+      context: ./src/StoreApi.PaymentService
+      dockerfile: Dockerfile
+    depends_on: [ kafka ]
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports: [ "5001:8080" ]

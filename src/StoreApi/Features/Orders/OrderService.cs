@@ -1,6 +1,8 @@
-﻿using StoreApi.Common.DataTransferObjects.Orders;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using StoreApi.Common.DataTransferObjects.Orders;
 using StoreApi.Entities;
 using StoreApi.Entities.Exceptions;
+using StoreApi.Infrastructure.Messaging;
 
 namespace StoreApi.Features.Orders
 {
@@ -8,11 +10,13 @@ namespace StoreApi.Features.Orders
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly ILogger<OrderService> _logger;
+        private readonly IEventPublisher _eventPublisher;
 
-        public OrderService(IRepositoryManager repositoryManager, ILogger<OrderService> logger)
+        public OrderService(IRepositoryManager repositoryManager, ILogger<OrderService> logger,  IEventPublisher publisher)
         {
             _repositoryManager = repositoryManager;
             _logger = logger;
+            _eventPublisher = publisher;
         }
 
         public async Task<IEnumerable<OrderReadDto>> GetOrdersAsync()
@@ -20,7 +24,7 @@ namespace StoreApi.Features.Orders
             _logger.LogInformation("Fetching all orders");
             var orders =
                 await _repositoryManager.OrderRepository.GetOrdersAsync();
-
+            
             _logger.LogInformation($"Returning orders by converting them to read-only data transfer objects");
             var ordersToReturn = orders.Select(o =>
                 new OrderReadDto
