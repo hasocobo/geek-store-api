@@ -1,0 +1,4 @@
+[submodule "src/Store.Schemas"]
+	path = src/Store.Schemas
+	url = git@github.com:hasocobo/store-schema-registry.git
+	branch = main
