@@ -1,33 +1,47 @@
 using System.Text.Json;
+using Avro.Specific;
 using Confluent.Kafka;
+using Confluent.SchemaRegistry;
+using Confluent.SchemaRegistry.Serdes;
 
 namespace StoreApi.Infrastructure.Messaging;
 
 public sealed class KafkaEventPublisher : IEventPublisher
 {
-    private readonly IProducer<string, string> _producer;
+    private readonly IProducer<string, ISpecificRecord> _producer;
     private readonly ILogger<KafkaEventPublisher> _logger;
 
     public KafkaEventPublisher(IConfiguration config, ILogger<KafkaEventPublisher> logger)
     {
         _logger = logger;
-        var kafkaConfig = new ProducerConfig
+        var producerConfig = new ProducerConfig
         {
             BootstrapServers = config["KAFKA_BOOTSTRAP_SERVERS"],
             Acks = Acks.All,
             EnableIdempotence = true,
         };
-        _producer = new ProducerBuilder<string, string>(kafkaConfig).Build();
-    }
 
-    public async Task PublishAsync<T>(string topic, T data, CancellationToken cancellationToken = default)
-    {
-        var serializedData = JsonSerializer.Serialize(data);
-        _logger.LogInformation($"Publishing message to {topic}:  {serializedData}");
-        await _producer.ProduceAsync(topic, new Message<string, string>
+        var registryConfig = new SchemaRegistryConfig
         {
-            Key = Guid.NewGuid().ToString(),
-            Value = serializedData
-        });
+            Url = config["SCHEMA_REGISTRY_URL"],
+        };
+        
+        var registry = new CachedSchemaRegistryClient(registryConfig);
+        
+
+        _producer = new ProducerBuilder<string, ISpecificRecord>(producerConfig)
+            .SetValueSerializer(new AvroSerializer<ISpecificRecord>(registry))
+            .Build();    }
+
+    public async Task PublishAsync(string topic, ISpecificRecord message, CancellationToken cancellationToken = default)
+    {
+        await _producer.ProduceAsync(topic,
+            new Message<string, ISpecificRecord>
+            {
+                Key   = Guid.NewGuid().ToString(),
+                Value = message
+            }, cancellationToken);
+
+        _logger.LogInformation("→ {Topic}\n{Payload}", topic, message);
     }
 }

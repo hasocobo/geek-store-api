@@ -7,6 +7,7 @@ using StoreApi.Entities.Exceptions;
 using StoreApi.Features;
 using StoreApi.Features.Categories;
 using StoreApi.Features.Products;
+using StoreApi.Infrastructure.Messaging;
 using Xunit;
 
 namespace StoreApiTests.ProductTests;
@@ -17,18 +18,21 @@ public class ProductUnitTests
     private readonly Mock<ICategoryRepository> _categoryRepositoryMock;
     private readonly Mock<IRepositoryManager> _repositoryManagerMock;
     private readonly IProductService _productService;
+    
+    private readonly Mock<IEventPublisher> _eventPublisher;
 
     public ProductUnitTests()
     {
         _repositoryManagerMock = new Mock<IRepositoryManager>();
         _productRepositoryMock = new Mock<IProductRepository>();
         _categoryRepositoryMock = new Mock<ICategoryRepository>();
+        _eventPublisher = new Mock<IEventPublisher>();
 
         _repositoryManagerMock.Setup(rm => rm.ProductRepository).Returns(_productRepositoryMock.Object);
         _repositoryManagerMock.Setup(rm => rm.CategoryRepository).Returns(_categoryRepositoryMock.Object);
         _repositoryManagerMock.Setup(rm => rm.SaveAsync()).Returns(Task.CompletedTask);
 
-        _productService = new ProductService(_repositoryManagerMock.Object, NullLogger<ProductService>.Instance);
+        _productService = new ProductService(_repositoryManagerMock.Object, NullLogger<ProductService>.Instance, _eventPublisher.Object);
     }
 
     // filtering, sorting, searching are tested with integration testing

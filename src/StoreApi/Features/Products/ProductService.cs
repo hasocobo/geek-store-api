@@ -1,7 +1,10 @@
-﻿using StoreApi.Common.DataTransferObjects.Products;
+﻿using Microsoft.CodeAnalysis.Elfie.Extensions;
+using StoreApi.Common.Generated.Events;
+using StoreApi.Common.DataTransferObjects.Products;
 using StoreApi.Common.QueryFeatures;
 using StoreApi.Entities;
 using StoreApi.Entities.Exceptions;
+using StoreApi.Infrastructure.Messaging;
 
 namespace StoreApi.Features.Products
 {
@@ -9,11 +12,15 @@ namespace StoreApi.Features.Products
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly ILogger<ProductService> _logger;
+        private readonly IEventPublisher _eventPublisher;
 
-        public ProductService(IRepositoryManager repositoryManager, ILogger<ProductService> logger)
+        public ProductService(IRepositoryManager repositoryManager,
+            ILogger<ProductService> logger,
+            IEventPublisher eventPublisher)
         {
             _repositoryManager = repositoryManager;
             _logger = logger;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<(IEnumerable<ProductReadDto>, Metadata)> GetProductsAsync(QueryParameters queryParameters)
@@ -52,6 +59,18 @@ namespace StoreApi.Features.Products
                 product.Description,
                 product.Category?.Name ?? string.Empty
             );
+            
+            var viewed = new ProductViewed
+            {
+                eventId    = Guid.NewGuid().ToString(),
+                productId  = productId.ToString(),
+                userId     = null,
+                occurredAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToDateTime(),
+                referrer   = null
+            };
+            
+            // Creating product viewed event for analytics  
+            await _eventPublisher.PublishAsync("product.viewed.v1", viewed);
 
             return productToReturn;
         }
